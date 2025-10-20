@@ -7,15 +7,15 @@ const Helpers_1 = require("../../Helpers");
 const Password_1 = require("../../Password");
 const inspect_1 = require("../../inspect");
 class MessageButton {
+    [inspect_1.inspect.custom]() {
+        return (0, Helpers_1.betterConsoleLog)(this);
+    }
     constructor(client, original, chat, bot, msgId) {
         this.button = original;
         this._bot = bot;
         this._chat = chat;
         this._msgId = msgId;
         this._client = client;
-    }
-    [inspect_1.inspect.custom]() {
-        return Helpers_1.betterConsoleLog(this);
     }
     get client() {
         return this._client;
@@ -78,7 +78,7 @@ class MessageButton {
             let encryptedPassword;
             if (password != undefined) {
                 const pwd = await this.client.invoke(new api_1.Api.account.GetPassword());
-                encryptedPassword = await Password_1.computeCheck(pwd, password);
+                encryptedPassword = await (0, Password_1.computeCheck)(pwd, password);
             }
             const request = new api_1.Api.messages.GetBotCallbackAnswer({
                 peer: this._chat,

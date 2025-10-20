@@ -6,11 +6,14 @@ const api_1 = require("../api");
 const Helpers_1 = require("../../Helpers");
 const inspect_1 = require("../../inspect");
 class Draft {
+    [inspect_1.inspect.custom]() {
+        return (0, Helpers_1.betterConsoleLog)(this);
+    }
     constructor(client, entity, draft) {
         this._client = client;
-        this._peer = Utils_1.getPeer(entity);
+        this._peer = (0, Utils_1.getPeer)(entity);
         this._entity = entity;
-        this._inputEntity = entity ? Utils_1.getInputPeer(entity) : undefined;
+        this._inputEntity = entity ? (0, Utils_1.getInputPeer)(entity) : undefined;
         if (!draft || !(draft instanceof api_1.Api.DraftMessage)) {
             draft = new api_1.Api.DraftMessage({
                 message: "",
@@ -31,9 +34,6 @@ class Draft {
                 }
             }
         }
-    }
-    [inspect_1.inspect.custom]() {
-        return Helpers_1.betterConsoleLog(this);
     }
     get entity() {
         return this._entity;

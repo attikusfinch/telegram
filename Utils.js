@@ -3,7 +3,37 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getDisplayName = exports.rtrim = exports.parseUsername = exports.resolveInviteLink = exports.parseID = exports.parsePhone = exports.getMessageId = exports.resolveId = exports.getPeerId = exports.sanitizeParseMode = exports.getPeer = exports.getAppropriatedPartSize = exports.getInputMedia = exports.getInputGeo = exports.getAttributes = exports.getExtension = exports.isImage = exports.isAudio = exports.getInputDocument = exports.getInputPhoto = exports.strippedPhotoToJpg = exports.getInputChatPhoto = exports.getInputMessage = exports.getInputUser = exports.getInputChannel = exports.getInnerText = exports._getEntityPair = exports._photoSizeByteCount = exports.getInputPeer = exports.chunks = exports.getFileInfo = void 0;
+exports.getFileInfo = getFileInfo;
+exports.chunks = chunks;
+exports.getInputPeer = getInputPeer;
+exports._photoSizeByteCount = _photoSizeByteCount;
+exports._getEntityPair = _getEntityPair;
+exports.getInnerText = getInnerText;
+exports.getInputChannel = getInputChannel;
+exports.getInputUser = getInputUser;
+exports.getInputMessage = getInputMessage;
+exports.getInputChatPhoto = getInputChatPhoto;
+exports.strippedPhotoToJpg = strippedPhotoToJpg;
+exports.getInputPhoto = getInputPhoto;
+exports.getInputDocument = getInputDocument;
+exports.isAudio = isAudio;
+exports.isImage = isImage;
+exports.getExtension = getExtension;
+exports.getAttributes = getAttributes;
+exports.getInputGeo = getInputGeo;
+exports.getInputMedia = getInputMedia;
+exports.getAppropriatedPartSize = getAppropriatedPartSize;
+exports.getPeer = getPeer;
+exports.sanitizeParseMode = sanitizeParseMode;
+exports.getPeerId = getPeerId;
+exports.resolveId = resolveId;
+exports.getMessageId = getMessageId;
+exports.parsePhone = parsePhone;
+exports.parseID = parseID;
+exports.resolveInviteLink = resolveInviteLink;
+exports.parseUsername = parseUsername;
+exports.rtrim = rtrim;
+exports.getDisplayName = getDisplayName;
 const big_integer_1 = __importDefault(require("big-integer"));
 const mime_1 = __importDefault(require("mime"));
 const html_1 = require("./extensions/html");
@@ -53,12 +83,11 @@ function getFileInfo(fileLocation) {
                 fileReference: location.fileReference,
                 thumbSize: location.sizes[location.sizes.length - 1].type,
             }),
-            size: big_integer_1.default(_photoSizeByteCount(location.sizes[location.sizes.length - 1]) || 0),
+            size: (0, big_integer_1.default)(_photoSizeByteCount(location.sizes[location.sizes.length - 1]) || 0),
         };
     }
     _raiseCastFail(fileLocation, "InputFileLocation");
 }
-exports.getFileInfo = getFileInfo;
 /**
  * Turns the given iterable into chunks of the specified size,
  * which is 100 by default since that's what Telegram uses the most.
@@ -68,7 +97,6 @@ function* chunks(arr, size = 100) {
         yield arr.slice(i, i + size);
     }
 }
-exports.chunks = chunks;
 const USERNAME_RE = new RegExp("@|(?:https?:\\/\\/)?(?:www\\.)?" +
     "(?:telegram\\.(?:me|dog)|t\\.me)\\/(@|joinchat\\/)?", "i");
 const JPEG_HEADER = Buffer.from("ffd8ffe000104a46494600010100000100010000ffdb004300281c1e231e19282321232d2b28303c64413c37373c7b585d4964918099968f808c8aa0b4e6c3a0aadaad8a8cc8ffcbdaeef5ffffff9bc1fffffffaffe6fdfff8ffdb0043012b2d2d3c353c76414176f8a58ca5f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8f8ffc00011080000000003012200021101031101ffc4001f0000010501010101010100000000000000000102030405060708090a0bffc400b5100002010303020403050504040000017d01020300041105122131410613516107227114328191a1082342b1c11552d1f02433627282090a161718191a25262728292a3435363738393a434445464748494a535455565758595a636465666768696a737475767778797a838485868788898a92939495969798999aa2a3a4a5a6a7a8a9aab2b3b4b5b6b7b8b9bac2c3c4c5c6c7c8c9cad2d3d4d5d6d7d8d9dae1e2e3e4e5e6e7e8e9eaf1f2f3f4f5f6f7f8f9faffc4001f0100030101010101010101010000000000000102030405060708090a0bffc400b51100020102040403040705040400010277000102031104052131061241510761711322328108144291a1b1c109233352f0156272d10a162434e125f11718191a262728292a35363738393a434445464748494a535455565758595a636465666768696a737475767778797a82838485868788898a92939495969798999aa2a3a4a5a6a7a8a9aab2b3b4b5b6b7b8b9bac2c3c4c5c6c7c8c9cad2d3d4d5d6d7d8d9dae2e3e4e5e6e7e8e9eaf2f3f4f5f6f7f8f9faffda000c03010002110311003f00", "hex");
@@ -126,7 +154,7 @@ function getInputPeer(entity, allowSelf = true, checkHash = true) {
             !checkHash) {
             return new tl_1.Api.InputPeerUser({
                 userId: entity.id,
-                accessHash: entity.accessHash || big_integer_1.default(0),
+                accessHash: entity.accessHash || (0, big_integer_1.default)(0),
             });
         }
         else {
@@ -142,7 +170,7 @@ function getInputPeer(entity, allowSelf = true, checkHash = true) {
         if ((entity.accessHash !== undefined && !entity.min) || !checkHash) {
             return new tl_1.Api.InputPeerChannel({
                 channelId: entity.id,
-                accessHash: entity.accessHash || big_integer_1.default(0),
+                accessHash: entity.accessHash || (0, big_integer_1.default)(0),
             });
         }
         else {
@@ -185,7 +213,6 @@ function getInputPeer(entity, allowSelf = true, checkHash = true) {
     }
     _raiseCastFail(entity, "InputPeer");
 }
-exports.getInputPeer = getInputPeer;
 function _photoSizeByteCount(size) {
     if (size instanceof tl_1.Api.PhotoSize) {
         return size.size;
@@ -209,7 +236,6 @@ function _photoSizeByteCount(size) {
         return undefined;
     }
 }
-exports._photoSizeByteCount = _photoSizeByteCount;
 function _getEntityPair(entityId, entities, cache, getInputPeerFunction = getInputPeer) {
     const entity = entities.get(entityId);
     let inputEntity;
@@ -224,7 +250,6 @@ function _getEntityPair(entityId, entities, cache, getInputPeerFunction = getInp
     }
     return [entity, inputEntity];
 }
-exports._getEntityPair = _getEntityPair;
 function getInnerText(text, entities) {
     const result = [];
     entities.forEach(function (value, key) {
@@ -234,7 +259,6 @@ function getInnerText(text, entities) {
     });
     return result;
 }
-exports.getInnerText = getInnerText;
 /**
  Similar to :meth:`get_input_peer`, but for :tl:`InputChannel`'s alone.
 
@@ -276,7 +300,6 @@ function getInputChannel(entity) {
     }
     _raiseCastFail(entity, "InputChannel");
 }
-exports.getInputChannel = getInputChannel;
 /**
  Similar to :meth:`getInputPeer`, but for :tl:`InputUser`'s alone.
 
@@ -338,7 +361,6 @@ function getInputUser(entity) {
     }
     _raiseCastFail(entity, "InputUser");
 }
-exports.getInputUser = getInputUser;
 /**
  Similar to :meth:`get_input_peer`, but for dialogs
  * @param dialog
@@ -385,7 +407,6 @@ function getInputMessage(message) {
     }
     _raiseCastFail(message, "InputMessage");
 }
-exports.getInputMessage = getInputMessage;
 /**
  *  Similar to :meth:`get_input_peer`, but for input messages.
  */
@@ -414,7 +435,6 @@ function getInputChatPhoto(photo) {
     }
     _raiseCastFail(photo, "InputChatPhoto");
 }
-exports.getInputChatPhoto = getInputChatPhoto;
 /**
  * Adds the JPG header and footer to a stripped image.
  * Ported from https://github.com/telegramdesktop/tdesktop/blob/bec39d89e19670eb436dc794a8f20b657cb87c71/Telegram/SourceFiles/ui/image/image.cpp#L225
@@ -432,7 +452,6 @@ function strippedPhotoToJpg(stripped) {
     header[166] = stripped[2];
     return Buffer.concat([header, stripped.slice(3), JPEG_FOOTER]);
 }
-exports.strippedPhotoToJpg = strippedPhotoToJpg;
 /*CONTEST
 function getInputLocation(location) {
     try {
@@ -539,7 +558,6 @@ function getInputPhoto(photo) {
     }
     _raiseCastFail(photo, "InputPhoto");
 }
-exports.getInputPhoto = getInputPhoto;
 /**
  *  Similar to :meth:`get_input_peer`, but for documents
  */
@@ -568,7 +586,6 @@ function getInputDocument(document) {
     }
     _raiseCastFail(document, "InputDocument");
 }
-exports.getInputDocument = getInputDocument;
 /**
  *  Returns `True` if the file has an audio mime type.
  */
@@ -583,7 +600,6 @@ function isAudio(file) {
         return (mime_1.default.getType(file) || "").startsWith("audio/");
     }
 }
-exports.isAudio = isAudio;
 /**
  *  Returns `True` if the file has an image mime type.
  */
@@ -591,7 +607,6 @@ function isImage(file) {
     const ext = _getExtension(file).toLowerCase();
     return (ext.endsWith(".png") || ext.endsWith(".jpg") || ext.endsWith(".jpeg"));
 }
-exports.isImage = isImage;
 function getExtension(media) {
     // Photos are always compressed as .jpg by Telegram
     try {
@@ -619,7 +634,6 @@ function getExtension(media) {
     }
     return "";
 }
-exports.getExtension = getExtension;
 /**
  * Gets the extension for the given file, which can be either a
  * str or an ``open()``'ed file (which has a ``.name`` attribute).
@@ -734,7 +748,6 @@ function getAttributes(file, { attributes = null, mimeType = undefined, forceDoc
         mimeType: mimeType,
     };
 }
-exports.getAttributes = getAttributes;
 /**
  *  Similar to :meth:`get_input_peer`, but for geo points
  */
@@ -760,7 +773,6 @@ function getInputGeo(geo) {
     }
     _raiseCastFail(geo, "InputGeoPoint");
 }
-exports.getInputGeo = getInputGeo;
 /**
  *
  Similar to :meth:`get_input_peer`, but for media.
@@ -911,7 +923,6 @@ function getInputMedia(media, { isPhoto = false, attributes = undefined, forceDo
     }
     _raiseCastFail(media, "InputMedia");
 }
-exports.getInputMedia = getInputMedia;
 /**
  * Gets the appropriated part size when uploading or downloading files,
  * given an initial file size.
@@ -929,7 +940,6 @@ function getAppropriatedPartSize(fileSize) {
     }
     return 512;
 }
-exports.getAppropriatedPartSize = getAppropriatedPartSize;
 function getPeer(peer) {
     if (!peer) {
         _raiseCastFail(peer, "undefined");
@@ -938,7 +948,7 @@ function getPeer(peer) {
         _raiseCastFail(peer, "peer");
     }
     if (typeof peer == "number" || typeof peer == "bigint") {
-        peer = Helpers_1.returnBigInt(peer);
+        peer = (0, Helpers_1.returnBigInt)(peer);
     }
     try {
         if (big_integer_1.default.isInstance(peer)) {
@@ -991,7 +1001,6 @@ function getPeer(peer) {
     catch (e) { }
     _raiseCastFail(peer, "peer");
 }
-exports.getPeer = getPeer;
 function sanitizeParseMode(mode) {
     if (mode === "md" || mode === "markdown") {
         return markdown_1.MarkdownParser;
@@ -1009,7 +1018,6 @@ function sanitizeParseMode(mode) {
     }
     throw new Error(`Invalid parse mode type ${mode}`);
 }
-exports.sanitizeParseMode = sanitizeParseMode;
 /**
  Convert the given peer into its marked ID by default.
 
@@ -1028,7 +1036,7 @@ exports.sanitizeParseMode = sanitizeParseMode;
  */
 function getPeerId(peer, addMark = true) {
     if (typeof peer == "string" && parseID(peer)) {
-        peer = Helpers_1.returnBigInt(peer);
+        peer = (0, Helpers_1.returnBigInt)(peer);
     }
     // First we assert it's a Peer TLObject, or early return for integers
     if (big_integer_1.default.isInstance(peer)) {
@@ -1049,7 +1057,7 @@ function getPeerId(peer, addMark = true) {
     }
     else if (peer instanceof tl_1.Api.PeerChat) {
         // Check in case the user mixed things up to avoid blowing up
-        peer.chatId = resolveId(Helpers_1.returnBigInt(peer.chatId))[0];
+        peer.chatId = resolveId((0, Helpers_1.returnBigInt)(peer.chatId))[0];
         return addMark
             ? peer.chatId.negate().toString()
             : peer.chatId.toString();
@@ -1057,7 +1065,7 @@ function getPeerId(peer, addMark = true) {
     else if (typeof peer == "object" && "channelId" in peer) {
         // if (peer instanceof Api.PeerChannel)
         // Check in case the user mixed things up to avoid blowing up
-        peer.channelId = resolveId(Helpers_1.returnBigInt(peer.channelId))[0];
+        peer.channelId = resolveId((0, Helpers_1.returnBigInt)(peer.channelId))[0];
         if (!addMark) {
             return peer.channelId.toString();
         }
@@ -1067,7 +1075,6 @@ function getPeerId(peer, addMark = true) {
     }
     _raiseCastFail(peer, "int");
 }
-exports.getPeerId = getPeerId;
 /**
  * Given a marked ID, returns the original ID and its :tl:`Peer` type.
  * @param markedId
@@ -1082,11 +1089,10 @@ function resolveId(markedId) {
     // two zeroes.
     const m = markedId.toString().match(/-100([^0]\d*)/);
     if (m) {
-        return [big_integer_1.default(m[1]), tl_1.Api.PeerChannel];
+        return [(0, big_integer_1.default)(m[1]), tl_1.Api.PeerChannel];
     }
     return [markedId.negate(), tl_1.Api.PeerChat];
 }
-exports.resolveId = resolveId;
 /**
  * returns an entity pair
  * @param entityId
@@ -1129,7 +1135,6 @@ function getMessageId(message) {
         throw new Error(`Invalid message type: ${message.constructor.name}`);
     }
 }
-exports.getMessageId = getMessageId;
 /**
  * Parses the given phone, or returns `undefined` if it's invalid.
  * @param phone
@@ -1140,20 +1145,17 @@ function parsePhone(phone) {
         return !isNaN(Number(phone)) ? phone.replace("+", "") : undefined;
     }
 }
-exports.parsePhone = parsePhone;
 /**
  * Parses a string ID into a big int
  * @param id
  */
 function parseID(id) {
     const isValid = /^(-?[0-9][0-9]*)$/.test(id);
-    return isValid ? big_integer_1.default(id) : undefined;
+    return isValid ? (0, big_integer_1.default)(id) : undefined;
 }
-exports.parseID = parseID;
 function resolveInviteLink(link) {
     throw new Error("not implemented");
 }
-exports.resolveInviteLink = resolveInviteLink;
 /**
  Parses the given username or channel access hash, given
  a string, username or URL. Returns a tuple consisting of
@@ -1192,14 +1194,12 @@ function parseUsername(username) {
         };
     }
 }
-exports.parseUsername = parseUsername;
 function rtrim(s, mask) {
     while (~mask.indexOf(s[s.length - 1])) {
         s = s.slice(0, -1);
     }
     return s;
 }
-exports.rtrim = rtrim;
 /**
  * Gets the display name for the given :tl:`User`,
  :tl:`Chat` or :tl:`Channel`. Returns an empty string otherwise
@@ -1225,7 +1225,6 @@ function getDisplayName(entity) {
     }
     return "";
 }
-exports.getDisplayName = getDisplayName;
 /**
  * check if a given item is an array like or not
  * @param item

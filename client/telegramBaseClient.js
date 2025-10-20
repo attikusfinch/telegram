@@ -107,7 +107,7 @@ class TelegramBaseClient {
             systemVersion: clientParams.systemVersion || os_1.default.release().toString() || "1.0",
             appVersion: clientParams.appVersion || "1.0",
             langCode: clientParams.langCode,
-            langPack: "",
+            langPack: "", // this should be left empty.
             systemLangCode: clientParams.systemLangCode,
             proxy: initProxy,
         });
@@ -257,7 +257,7 @@ class TelegramBaseClient {
                 else if (this._log.canSend(Logger_1.LogLevel.ERROR)) {
                     console.error(err);
                 }
-                await Helpers_1.sleep(1000);
+                await (0, Helpers_1.sleep)(1000);
                 await sender.disconnect();
             }
         }
@@ -272,7 +272,7 @@ class TelegramBaseClient {
             sender = await this._exportedSenderPromises.get(dcId);
             if (!sender.isConnected()) {
                 if (sender.isConnecting) {
-                    await Helpers_1.sleep(EXPORTED_SENDER_RECONNECT_TIMEOUT);
+                    await (0, Helpers_1.sleep)(EXPORTED_SENDER_RECONNECT_TIMEOUT);
                     return this._borrowExportedSender(dcId, false, sender);
                 }
                 else {

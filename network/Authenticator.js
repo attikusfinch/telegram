@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.doAuthentication = void 0;
+exports.doAuthentication = doAuthentication;
 const Helpers_1 = require("../Helpers");
 const tl_1 = require("../tl");
 const errors_1 = require("../errors");
@@ -16,8 +16,8 @@ const AuthKey_1 = require("../crypto/AuthKey");
 const RETRIES = 20;
 async function doAuthentication(sender, log) {
     // Step 1 sending: PQ Request, endianness doesn't matter since it's random
-    let bytes = Helpers_1.generateRandomBytes(16);
-    const nonce = Helpers_1.readBigIntFromBuffer(bytes, false, true);
+    let bytes = (0, Helpers_1.generateRandomBytes)(16);
+    const nonce = (0, Helpers_1.readBigIntFromBuffer)(bytes, false, true);
     const resPQ = await sender.send(new tl_1.Api.ReqPqMulti({ nonce }));
     log.debug("Starting authKey generation step 1");
     if (!(resPQ instanceof tl_1.Api.ResPQ)) {
@@ -26,16 +26,16 @@ async function doAuthentication(sender, log) {
     if (resPQ.nonce.neq(nonce)) {
         throw new errors_1.SecurityError("Step 1 invalid nonce from server");
     }
-    const pq = Helpers_1.readBigIntFromBuffer(resPQ.pq, false, true);
+    const pq = (0, Helpers_1.readBigIntFromBuffer)(resPQ.pq, false, true);
     log.debug("Finished authKey generation step 1");
     // Step 2 sending: DH Exchange
     const { p, q } = Factorizator_1.Factorizator.factorize(pq);
-    const pBuffer = Helpers_1.getByteArray(p);
-    const qBuffer = Helpers_1.getByteArray(q);
-    bytes = Helpers_1.generateRandomBytes(32);
-    const newNonce = Helpers_1.readBigIntFromBuffer(bytes, true, true);
+    const pBuffer = (0, Helpers_1.getByteArray)(p);
+    const qBuffer = (0, Helpers_1.getByteArray)(q);
+    bytes = (0, Helpers_1.generateRandomBytes)(32);
+    const newNonce = (0, Helpers_1.readBigIntFromBuffer)(bytes, true, true);
     const pqInnerData = new tl_1.Api.PQInnerData({
-        pq: Helpers_1.getByteArray(pq),
+        pq: (0, Helpers_1.getByteArray)(pq), // unsigned
         p: pBuffer,
         q: qBuffer,
         nonce: resPQ.nonce,
@@ -58,28 +58,28 @@ async function doAuthentication(sender, log) {
         throw new errors_1.SecurityError("Step 2 could not find a valid key for fingerprints");
     }
     // Value should be padded to be made 192 exactly
-    const padding = Helpers_1.generateRandomBytes(192 - pqInnerData.length);
+    const padding = (0, Helpers_1.generateRandomBytes)(192 - pqInnerData.length);
     const dataWithPadding = Buffer.concat([pqInnerData, padding]);
     const dataPadReversed = Buffer.from(dataWithPadding).reverse();
     let encryptedData;
     for (let i = 0; i < RETRIES; i++) {
-        const tempKey = Helpers_1.generateRandomBytes(32);
-        const shaDigestKeyWithData = await Helpers_1.sha256(Buffer.concat([tempKey, dataWithPadding]));
+        const tempKey = (0, Helpers_1.generateRandomBytes)(32);
+        const shaDigestKeyWithData = await (0, Helpers_1.sha256)(Buffer.concat([tempKey, dataWithPadding]));
         const dataWithHash = Buffer.concat([
             dataPadReversed,
             shaDigestKeyWithData,
         ]);
         const ige = new IGE_1.IGE(tempKey, Buffer.alloc(32));
         const aesEncrypted = ige.encryptIge(dataWithHash);
-        const tempKeyXor = Helpers_1.bufferXor(tempKey, await Helpers_1.sha256(aesEncrypted));
+        const tempKeyXor = (0, Helpers_1.bufferXor)(tempKey, await (0, Helpers_1.sha256)(aesEncrypted));
         const keyAesEncrypted = Buffer.concat([tempKeyXor, aesEncrypted]);
-        const keyAesEncryptedInt = Helpers_1.readBigIntFromBuffer(keyAesEncrypted, false, false);
+        const keyAesEncryptedInt = (0, Helpers_1.readBigIntFromBuffer)(keyAesEncrypted, false, false);
         if (keyAesEncryptedInt.greaterOrEquals(targetKey.n)) {
             log.debug("Aes key greater than RSA. retrying");
             continue;
         }
-        const encryptedDataBuffer = Helpers_1.modExp(keyAesEncryptedInt, big_integer_1.default(targetKey.e), targetKey.n);
-        encryptedData = Helpers_1.readBufferFromBigInt(encryptedDataBuffer, 256, false, false);
+        const encryptedDataBuffer = (0, Helpers_1.modExp)(keyAesEncryptedInt, (0, big_integer_1.default)(targetKey.e), targetKey.n);
+        encryptedData = (0, Helpers_1.readBufferFromBigInt)(encryptedDataBuffer, 256, false, false);
         break;
     }
     if (encryptedData === undefined) {
@@ -105,8 +105,8 @@ async function doAuthentication(sender, log) {
         throw new errors_1.SecurityError("Step 2 invalid server nonce from server");
     }
     if (serverDhParams instanceof tl_1.Api.ServerDHParamsFail) {
-        const sh = await Helpers_1.sha1(Helpers_1.toSignedLittleBuffer(newNonce, 32).slice(4, 20));
-        const nnh = Helpers_1.readBigIntFromBuffer(sh, true, true);
+        const sh = await (0, Helpers_1.sha1)((0, Helpers_1.toSignedLittleBuffer)(newNonce, 32).slice(4, 20));
+        const nnh = (0, Helpers_1.readBigIntFromBuffer)(sh, true, true);
         if (serverDhParams.newNonceHash.neq(nnh)) {
             throw new errors_1.SecurityError("Step 2 invalid DH fail nonce from server");
         }
@@ -117,7 +117,7 @@ async function doAuthentication(sender, log) {
     log.debug("Finished authKey generation step 2");
     log.debug("Starting authKey generation step 3");
     // Step 3 sending: Complete DH Exchange
-    const { key, iv } = await Helpers_1.generateKeyDataFromNonce(resPQ.serverNonce, newNonce);
+    const { key, iv } = await (0, Helpers_1.generateKeyDataFromNonce)(resPQ.serverNonce, newNonce);
     if (serverDhParams.encryptedAnswer.length % 16 !== 0) {
         // See PR#453
         throw new errors_1.SecurityError("Step 3 AES block size mismatch");
@@ -136,21 +136,21 @@ async function doAuthentication(sender, log) {
     if (serverDhInner.serverNonce.neq(resPQ.serverNonce)) {
         throw new errors_1.SecurityError("Step 3 Invalid server nonce in encrypted answer");
     }
-    const dhPrime = Helpers_1.readBigIntFromBuffer(serverDhInner.dhPrime, false, false);
-    const ga = Helpers_1.readBigIntFromBuffer(serverDhInner.gA, false, false);
+    const dhPrime = (0, Helpers_1.readBigIntFromBuffer)(serverDhInner.dhPrime, false, false);
+    const ga = (0, Helpers_1.readBigIntFromBuffer)(serverDhInner.gA, false, false);
     const timeOffset = serverDhInner.serverTime - Math.floor(new Date().getTime() / 1000);
-    const b = Helpers_1.readBigIntFromBuffer(Helpers_1.generateRandomBytes(256), false, false);
-    const gb = Helpers_1.modExp(big_integer_1.default(serverDhInner.g), b, dhPrime);
-    const gab = Helpers_1.modExp(ga, b, dhPrime);
+    const b = (0, Helpers_1.readBigIntFromBuffer)((0, Helpers_1.generateRandomBytes)(256), false, false);
+    const gb = (0, Helpers_1.modExp)((0, big_integer_1.default)(serverDhInner.g), b, dhPrime);
+    const gab = (0, Helpers_1.modExp)(ga, b, dhPrime);
     // Prepare client DH Inner Data
     const clientDhInner = new tl_1.Api.ClientDHInnerData({
         nonce: resPQ.nonce,
         serverNonce: resPQ.serverNonce,
-        retryId: big_integer_1.default.zero,
-        gB: Helpers_1.getByteArray(gb, false),
+        retryId: big_integer_1.default.zero, // TODO Actual retry ID
+        gB: (0, Helpers_1.getByteArray)(gb, false),
     }).getBytes();
     const clientDdhInnerHashed = Buffer.concat([
-        await Helpers_1.sha1(clientDhInner),
+        await (0, Helpers_1.sha1)(clientDhInner),
         clientDhInner,
     ]);
     // Encryption
@@ -176,7 +176,7 @@ async function doAuthentication(sender, log) {
         throw new errors_1.SecurityError(`Step 3 invalid ${name} server nonce from server`);
     }
     const authKey = new AuthKey_1.AuthKey();
-    await authKey.setKey(Helpers_1.getByteArray(gab));
+    await authKey.setKey((0, Helpers_1.getByteArray)(gab));
     const nonceNumber = 1 + nonceTypesString.indexOf(dhGen.className);
     const newNonceHash = await authKey.calcNewNonceHash(newNonce, nonceNumber);
     // @ts-ignore
@@ -190,4 +190,3 @@ async function doAuthentication(sender, log) {
     log.debug("Finished authKey generation step 3");
     return { authKey, timeOffset };
 }
-exports.doAuthentication = doAuthentication;

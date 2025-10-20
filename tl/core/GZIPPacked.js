@@ -24,14 +24,14 @@ class GZIPPacked {
         //return Buffer.from(deflate(input, { level: 9, gzip: true }))
     }
     static ungzip(input) {
-        return Buffer.from(pako_1.inflate(input));
+        return Buffer.from((0, pako_1.inflate)(input));
     }
     async toBytes() {
         const g = Buffer.alloc(4);
         g.writeUInt32LE(GZIPPacked.CONSTRUCTOR_ID, 0);
         return Buffer.concat([
             g,
-            __1.serializeBytes(await GZIPPacked.gzip(this.data)),
+            (0, __1.serializeBytes)(await GZIPPacked.gzip(this.data)),
         ]);
     }
     static async read(reader) {
