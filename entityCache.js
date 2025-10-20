@@ -15,7 +15,7 @@ class EntityCache {
     }
     add(entities) {
         const temp = [];
-        if (!(0, Helpers_1.isArrayLike)(entities)) {
+        if (!Helpers_1.isArrayLike(entities)) {
             if (entities != undefined) {
                 if (typeof entities == "object") {
                     if ("chats" in entities) {
@@ -38,9 +38,9 @@ class EntityCache {
         }
         for (const entity of entities) {
             try {
-                const pid = (0, Utils_1.getPeerId)(entity);
+                const pid = Utils_1.getPeerId(entity);
                 if (!this.cacheMap.has(pid.toString())) {
-                    this.cacheMap.set(pid.toString(), (0, Utils_1.getInputPeer)(entity));
+                    this.cacheMap.set(pid.toString(), Utils_1.getInputPeer(entity));
                 }
             }
             catch (e) { }
@@ -50,11 +50,11 @@ class EntityCache {
         if (item == undefined) {
             throw new Error("No cached entity for the given key");
         }
-        item = (0, Helpers_1.returnBigInt)(item);
+        item = Helpers_1.returnBigInt(item);
         if (item.lesser(big_integer_1.default.zero)) {
             let res;
             try {
-                res = this.cacheMap.get((0, Utils_1.getPeerId)(item).toString());
+                res = this.cacheMap.get(Utils_1.getPeerId(item).toString());
                 if (res) {
                     return res;
                 }
@@ -64,7 +64,7 @@ class EntityCache {
             }
         }
         for (const cls of [tl_1.Api.PeerUser, tl_1.Api.PeerChat, tl_1.Api.PeerChannel]) {
-            const result = this.cacheMap.get((0, Utils_1.getPeerId)(new cls({
+            const result = this.cacheMap.get(Utils_1.getPeerId(new cls({
                 userId: item,
                 chatId: item,
                 channelId: item,

@@ -69,7 +69,7 @@ class BinaryReader {
      */
     readLargeInt(bits, signed = true) {
         const buffer = this.read(Math.floor(bits / 8));
-        return (0, Helpers_1.readBigIntFromBuffer)(buffer, true, signed);
+        return Helpers_1.readBigIntFromBuffer(buffer, true, signed);
     }
     /**
      * Read the given amount of bytes, or -1 to read all remaining.

@@ -1,3 +1,4 @@
+/// <reference types="node" />
 export declare class BinaryReader {
     private readonly stream;
     private _last?;

@@ -47,7 +47,7 @@ class RequestIter {
                 }
                 if (this.index == this.buffer.length) {
                     if (this.waitTime) {
-                        await (0, Helpers_1.sleep)(this.waitTime -
+                        await Helpers_1.sleep(this.waitTime -
                             (new Date().getTime() / 1000 - this.lastLoad));
                     }
                     this.lastLoad = new Date().getTime() / 1000;
@@ -82,20 +82,18 @@ class RequestIter {
         };
     }
     async collect() {
-        var _a, e_1, _b, _c;
+        var e_1, _a;
         const result = new _1.helpers.TotalList();
         try {
-            for (var _d = true, _e = __asyncValues(this), _f; _f = await _e.next(), _a = _f.done, !_a; _d = true) {
-                _c = _f.value;
-                _d = false;
-                const message = _c;
+            for (var _b = __asyncValues(this), _c; _c = await _b.next(), !_c.done;) {
+                const message = _c.value;
                 result.push(message);
             }
         }
         catch (e_1_1) { e_1 = { error: e_1_1 }; }
         finally {
             try {
-                if (!_d && !_a && (_b = _e.return)) await _b.call(_e);
+                if (_c && !_c.done && (_a = _b.return)) await _a.call(_b);
             }
             finally { if (e_1) throw e_1.error; }
         }

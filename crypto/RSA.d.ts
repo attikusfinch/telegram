@@ -1,3 +1,4 @@
+/// <reference types="node" />
 import bigInt from "big-integer";
 export declare const _serverKeys: Map<string, {
     n: bigInt.BigInteger;

@@ -28,11 +28,11 @@ class Factorizator {
      */
     static factorize(pq) {
         if (pq.remainder(2).equals(big_integer_1.default.zero)) {
-            return { p: (0, big_integer_1.default)(2), q: pq.divide((0, big_integer_1.default)(2)) };
+            return { p: big_integer_1.default(2), q: pq.divide(big_integer_1.default(2)) };
         }
-        let y = big_integer_1.default.randBetween((0, big_integer_1.default)(1), pq.minus(1));
-        const c = big_integer_1.default.randBetween((0, big_integer_1.default)(1), pq.minus(1));
-        const m = big_integer_1.default.randBetween((0, big_integer_1.default)(1), pq.minus(1));
+        let y = big_integer_1.default.randBetween(big_integer_1.default(1), pq.minus(1));
+        const c = big_integer_1.default.randBetween(big_integer_1.default(1), pq.minus(1));
+        const m = big_integer_1.default.randBetween(big_integer_1.default(1), pq.minus(1));
         let g = big_integer_1.default.one;
         let r = big_integer_1.default.one;
         let q = big_integer_1.default.one;
@@ -41,15 +41,15 @@ class Factorizator {
         let k;
         while (g.eq(big_integer_1.default.one)) {
             x = y;
-            for (let i = 0; (0, big_integer_1.default)(i).lesser(r); i++) {
-                y = (0, Helpers_1.modExp)(y, (0, big_integer_1.default)(2), pq).add(c).remainder(pq);
+            for (let i = 0; big_integer_1.default(i).lesser(r); i++) {
+                y = Helpers_1.modExp(y, big_integer_1.default(2), pq).add(c).remainder(pq);
             }
             k = big_integer_1.default.zero;
             while (k.lesser(r) && g.eq(big_integer_1.default.one)) {
                 ys = y;
                 const condition = big_integer_1.default.min(m, r.minus(k));
-                for (let i = 0; (0, big_integer_1.default)(i).lesser(condition); i++) {
-                    y = (0, Helpers_1.modExp)(y, (0, big_integer_1.default)(2), pq).add(c).remainder(pq);
+                for (let i = 0; big_integer_1.default(i).lesser(condition); i++) {
+                    y = Helpers_1.modExp(y, big_integer_1.default(2), pq).add(c).remainder(pq);
                     q = q.multiply(x.minus(y).abs()).remainder(pq);
                 }
                 g = Factorizator.gcd(q, pq);
@@ -59,7 +59,7 @@ class Factorizator {
         }
         if (g.eq(pq)) {
             while (true) {
-                ys = (0, Helpers_1.modExp)(ys, (0, big_integer_1.default)(2), pq).add(c).remainder(pq);
+                ys = Helpers_1.modExp(ys, big_integer_1.default(2), pq).add(c).remainder(pq);
                 g = Factorizator.gcd(x.minus(ys).abs(), pq);
                 if (g.greater(1)) {
                     break;

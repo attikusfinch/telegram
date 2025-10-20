@@ -78,8 +78,8 @@ class MTProtoState {
     async _calcKey(authKey, msgKey, client) {
         const x = client ? 0 : 8;
         const [sha256a, sha256b] = await Promise.all([
-            (0, Helpers_1.sha256)(Buffer.concat([msgKey, authKey.slice(x, x + 36)])),
-            (0, Helpers_1.sha256)(Buffer.concat([authKey.slice(x + 40, x + 76), msgKey])),
+            Helpers_1.sha256(Buffer.concat([msgKey, authKey.slice(x, x + 36)])),
+            Helpers_1.sha256(Buffer.concat([authKey.slice(x + 40, x + 76), msgKey])),
         ]);
         const key = Buffer.concat([
             sha256a.slice(0, 8),
@@ -122,7 +122,7 @@ class MTProtoState {
         s.writeInt32LE(seqNo, 0);
         const b = Buffer.alloc(4);
         b.writeInt32LE(body.length, 0);
-        const m = (0, Helpers_1.toSignedLittleBuffer)(msgId, 8);
+        const m = Helpers_1.toSignedLittleBuffer(msgId, 8);
         buffer.write(Buffer.concat([m, s, b]));
         buffer.write(body);
         return msgId;
@@ -144,13 +144,13 @@ class MTProtoState {
         if (!this.salt || !this.id || !authKey || !this.authKey.keyId) {
             throw new Error("Unset params");
         }
-        const s = (0, Helpers_1.toSignedLittleBuffer)(this.salt, 8);
-        const i = (0, Helpers_1.toSignedLittleBuffer)(this.id, 8);
+        const s = Helpers_1.toSignedLittleBuffer(this.salt, 8);
+        const i = Helpers_1.toSignedLittleBuffer(this.id, 8);
         data = Buffer.concat([Buffer.concat([s, i]), data]);
         const padding = __1.helpers.generateRandomBytes(__1.helpers.mod(-(data.length + 12), 16) + 12);
         // Being substr(what, offset, length); x = 0 for client
         // "msg_key_large = SHA256(substr(auth_key, 88+x, 32) + pt + padding)"
-        const msgKeyLarge = await (0, Helpers_1.sha256)(Buffer.concat([authKey.slice(88, 88 + 32), data, padding]));
+        const msgKeyLarge = await Helpers_1.sha256(Buffer.concat([authKey.slice(88, 88 + 32), data, padding]));
         // "msg_key = substr (msg_key_large, 8, 16)"
         const msgKey = msgKeyLarge.slice(8, 24);
         const { iv, key } = await this._calcKey(authKey, msgKey, true);
@@ -186,7 +186,7 @@ class MTProtoState {
         body = new IGE_1.IGE(key, iv).decryptIge(body.slice(24));
         // https://core.telegram.org/mtproto/security_guidelines
         // Sections "checking sha256 hash" and "message length"
-        const ourKey = await (0, Helpers_1.sha256)(Buffer.concat([authKey.slice(96, 96 + 32), body]));
+        const ourKey = await Helpers_1.sha256(Buffer.concat([authKey.slice(96, 96 + 32), body]));
         if (!msgKey.equals(ourKey.slice(8, 24))) {
             throw new errors_1.SecurityError("Received msg_key doesn't match with expected one");
         }
@@ -221,11 +221,11 @@ class MTProtoState {
     _getNewMsgId() {
         const now = new Date().getTime() / 1000 + this.timeOffset;
         const nanoseconds = Math.floor((now - Math.floor(now)) * 1e9);
-        let newMsgId = (0, big_integer_1.default)(Math.floor(now))
-            .shiftLeft((0, big_integer_1.default)(32))
-            .or((0, big_integer_1.default)(nanoseconds).shiftLeft((0, big_integer_1.default)(2)));
+        let newMsgId = big_integer_1.default(Math.floor(now))
+            .shiftLeft(big_integer_1.default(32))
+            .or(big_integer_1.default(nanoseconds).shiftLeft(big_integer_1.default(2)));
         if (this._lastMsgId.greaterOrEquals(newMsgId)) {
-            newMsgId = this._lastMsgId.add((0, big_integer_1.default)(4));
+            newMsgId = this._lastMsgId.add(big_integer_1.default(4));
         }
         this._lastMsgId = newMsgId;
         return newMsgId;
@@ -239,7 +239,7 @@ class MTProtoState {
         const bad = this._getNewMsgId();
         const old = this.timeOffset;
         const now = Math.floor(new Date().getTime() / 1000);
-        const correct = correctMsgId.shiftRight((0, big_integer_1.default)(32)).toJSNumber();
+        const correct = correctMsgId.shiftRight(big_integer_1.default(32)).toJSNumber();
         this.timeOffset = correct - now;
         if (this.timeOffset !== old) {
             this._lastMsgId = big_integer_1.default.zero;

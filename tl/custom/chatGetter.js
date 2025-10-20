@@ -14,7 +14,7 @@ const Helpers_1 = require("../../Helpers");
 const inspect_1 = require("../../inspect");
 class ChatGetter {
     [inspect_1.inspect.custom]() {
-        return (0, Helpers_1.betterConsoleLog)(this);
+        return Helpers_1.betterConsoleLog(this);
     }
     static initChatClass(c, { chatPeer, inputChat, chat, broadcast }) {
         c._chatPeer = chatPeer;
@@ -51,17 +51,15 @@ class ChatGetter {
         return this._inputChat;
     }
     async getInputChat() {
-        var _a, e_1, _b, _c;
+        var e_1, _a;
         if (!this.inputChat && this.chatId && this._client) {
             try {
                 const target = this.chatId;
                 try {
-                    for (var _d = true, _e = __asyncValues(this._client.iterDialogs({
+                    for (var _b = __asyncValues(this._client.iterDialogs({
                         limit: 100,
-                    })), _f; _f = await _e.next(), _a = _f.done, !_a; _d = true) {
-                        _c = _f.value;
-                        _d = false;
-                        const dialog = _c;
+                    })), _c; _c = await _b.next(), !_c.done;) {
+                        const dialog = _c.value;
                         if (dialog.id.eq(target)) {
                             this._chat = dialog.entity;
                             this._inputChat = dialog.inputEntity;
@@ -72,7 +70,7 @@ class ChatGetter {
                 catch (e_1_1) { e_1 = { error: e_1_1 }; }
                 finally {
                     try {
-                        if (!_d && !_a && (_b = _e.return)) await _b.call(_e);
+                        if (_c && !_c.done && (_a = _b.return)) await _a.call(_b);
                     }
                     finally { if (e_1) throw e_1.error; }
                 }
@@ -86,7 +84,7 @@ class ChatGetter {
     }
     get chatId() {
         return this._chatPeer
-            ? (0, Helpers_1.returnBigInt)(__1.utils.getPeerId(this._chatPeer))
+            ? Helpers_1.returnBigInt(__1.utils.getPeerId(this._chatPeer))
             : undefined;
     }
     get isPrivate() {

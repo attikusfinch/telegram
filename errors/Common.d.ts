@@ -1,6 +1,7 @@
 /**
  * Errors not related to the Telegram API itself
  */
+/// <reference types="node" />
 import { Api } from "../tl";
 /**
  * Occurs when a read operation was cancelled.

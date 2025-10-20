@@ -3,10 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports._ParticipantsIter = void 0;
-exports.iterParticipants = iterParticipants;
-exports.getParticipants = getParticipants;
-exports.kickParticipant = kickParticipant;
+exports.kickParticipant = exports.getParticipants = exports.iterParticipants = exports._ParticipantsIter = void 0;
 const Helpers_1 = require("../Helpers");
 const requestIter_1 = require("../requestIter");
 const __1 = require("../");
@@ -18,9 +15,6 @@ const _MAX_PARTICIPANTS_CHUNK_SIZE = 200;
 const _MAX_ADMIN_LOG_CHUNK_SIZE = 100;
 const _MAX_PROFILE_PHOTO_CHUNK_SIZE = 100;
 class _ChatAction {
-    [inspect_1.inspect.custom]() {
-        return (0, Helpers_1.betterConsoleLog)(this);
-    }
     constructor(client, chat, action, params = {
         delay: 4,
         autoCancel: true,
@@ -33,6 +27,9 @@ class _ChatAction {
         this._request = undefined;
         this._task = null;
         this._running = false;
+    }
+    [inspect_1.inspect.custom]() {
+        return Helpers_1.betterConsoleLog(this);
     }
     async start() {
         this._request = new tl_1.Api.messages.SetTyping({
@@ -56,7 +53,7 @@ class _ChatAction {
             if (this._request != undefined) {
                 await this._client.invoke(this._request);
             }
-            await (0, Helpers_1.sleep)(this._delay * 1000);
+            await Helpers_1.sleep(this._delay * 1000);
         }
     }
     progress(current, total) {
@@ -71,22 +68,22 @@ _ChatAction._str_mapping = {
     game: new tl_1.Api.SendMessageGamePlayAction(),
     location: new tl_1.Api.SendMessageGeoLocationAction(),
     "record-audio": new tl_1.Api.SendMessageRecordAudioAction(),
-    "record-voice": new tl_1.Api.SendMessageRecordAudioAction(), //alias
+    "record-voice": new tl_1.Api.SendMessageRecordAudioAction(),
     "record-round": new tl_1.Api.SendMessageRecordRoundAction(),
     "record-video": new tl_1.Api.SendMessageRecordVideoAction(),
     audio: new tl_1.Api.SendMessageUploadAudioAction({ progress: 1 }),
-    voice: new tl_1.Api.SendMessageUploadAudioAction({ progress: 1 }), // alias
-    song: new tl_1.Api.SendMessageUploadAudioAction({ progress: 1 }), // alias
+    voice: new tl_1.Api.SendMessageUploadAudioAction({ progress: 1 }),
+    song: new tl_1.Api.SendMessageUploadAudioAction({ progress: 1 }),
     round: new tl_1.Api.SendMessageUploadRoundAction({ progress: 1 }),
     video: new tl_1.Api.SendMessageUploadVideoAction({ progress: 1 }),
     photo: new tl_1.Api.SendMessageUploadPhotoAction({ progress: 1 }),
     document: new tl_1.Api.SendMessageUploadDocumentAction({ progress: 1 }),
-    file: new tl_1.Api.SendMessageUploadDocumentAction({ progress: 1 }), // alias
+    file: new tl_1.Api.SendMessageUploadDocumentAction({ progress: 1 }),
     cancel: new tl_1.Api.SendMessageCancelAction(),
 };
 class _ParticipantsIter extends requestIter_1.RequestIter {
     [inspect_1.inspect.custom]() {
-        return (0, Helpers_1.betterConsoleLog)(this);
+        return Helpers_1.betterConsoleLog(this);
     }
     async _init({ entity, filter, offset, search, showTotal, }) {
         var _a, _b;
@@ -239,7 +236,7 @@ class _ParticipantsIter extends requestIter_1.RequestIter {
 exports._ParticipantsIter = _ParticipantsIter;
 class _AdminLogIter extends requestIter_1.RequestIter {
     [inspect_1.inspect.custom]() {
-        return (0, Helpers_1.betterConsoleLog)(this);
+        return Helpers_1.betterConsoleLog(this);
     }
     async _init(entity, searchArgs, filterArgs) {
         let eventsFilter = undefined;
@@ -278,7 +275,7 @@ class _AdminLogIter extends requestIter_1.RequestIter {
         for (const e of r.events) {
             eventIds.push(e.id);
         }
-        this.request.maxId = (0, Helpers_1.getMinBigInt)([big_integer_1.default.zero, ...eventIds]);
+        this.request.maxId = Helpers_1.getMinBigInt([big_integer_1.default.zero, ...eventIds]);
         for (const ev of r.events) {
             if (ev.action instanceof tl_1.Api.ChannelAdminLogEventActionEditMessage) {
                 // @ts-ignore
@@ -299,11 +296,13 @@ function iterParticipants(client, entity, { limit, offset, search, filter, showT
         showTotal: showTotal,
     });
 }
+exports.iterParticipants = iterParticipants;
 /** @hidden */
 async function getParticipants(client, entity, params) {
     const it = client.iterParticipants(entity, params);
     return (await it.collect());
 }
+exports.getParticipants = getParticipants;
 /** @hidden */
 async function kickParticipant(client, entity, participant) {
     const peer = await client.getInputEntity(entity);
@@ -313,8 +312,8 @@ async function kickParticipant(client, entity, participant) {
     const type = __1.helpers._entityType(peer);
     if (type === __1.helpers._EntityType.CHAT) {
         request = new tl_1.Api.messages.DeleteChatUser({
-            chatId: (0, Helpers_1.returnBigInt)((0, Utils_1.getPeerId)(entity)),
-            userId: (0, Helpers_1.returnBigInt)((0, Utils_1.getPeerId)(participant)),
+            chatId: Helpers_1.returnBigInt(Utils_1.getPeerId(entity)),
+            userId: Helpers_1.returnBigInt(Utils_1.getPeerId(participant)),
         });
         resp = await client.invoke(request);
     }
@@ -335,7 +334,7 @@ async function kickParticipant(client, entity, participant) {
                 }),
             });
             resp = await client.invoke(request);
-            await (0, Helpers_1.sleep)(500);
+            await Helpers_1.sleep(500);
             await client.invoke(new tl_1.Api.channels.EditBanned({
                 channel: peer,
                 participant: user,
@@ -348,3 +347,4 @@ async function kickParticipant(client, entity, participant) {
     }
     return client._getResponseMessage(request, resp, entity);
 }
+exports.kickParticipant = kickParticipant;

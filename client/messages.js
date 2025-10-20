@@ -10,18 +10,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports._IDsIter = exports._MessagesIter = void 0;
-exports.iterMessages = iterMessages;
-exports.getMessages = getMessages;
-exports.sendMessage = sendMessage;
-exports.forwardMessages = forwardMessages;
-exports.editMessage = editMessage;
-exports.deleteMessages = deleteMessages;
-exports.pinMessage = pinMessage;
-exports.unpinMessage = unpinMessage;
-exports._pin = _pin;
-exports.markAsRead = markAsRead;
-exports.getCommentData = getCommentData;
+exports.getCommentData = exports.markAsRead = exports._pin = exports.unpinMessage = exports.pinMessage = exports.deleteMessages = exports.editMessage = exports.forwardMessages = exports.sendMessage = exports.getMessages = exports.iterMessages = exports._IDsIter = exports._MessagesIter = void 0;
 const tl_1 = require("../tl");
 const requestIter_1 = require("../requestIter");
 const Helpers_1 = require("../Helpers");
@@ -34,7 +23,7 @@ const uploads_1 = require("./uploads");
 const _MAX_CHUNK_SIZE = 100;
 class _MessagesIter extends requestIter_1.RequestIter {
     async _init({ entity, offsetId, minId, maxId, fromUser, offsetDate, addOffset, filter, search, replyTo, }) {
-        var _a, e_1, _b, _c;
+        var e_1, _a;
         if (entity) {
             this.entity = await this.client.getInputEntity(entity);
         }
@@ -120,7 +109,7 @@ class _MessagesIter extends requestIter_1.RequestIter {
                 limit: 0,
                 maxId: 0,
                 minId: 0,
-                hash: (0, Helpers_1.generateRandomBigInt)(),
+                hash: Helpers_1.generateRandomBigInt(),
                 fromId: fromUser,
             });
             if (!(filter instanceof tl_1.Api.InputMessagesFilterEmpty) &&
@@ -128,20 +117,18 @@ class _MessagesIter extends requestIter_1.RequestIter {
                 !search &&
                 !offsetId) {
                 try {
-                    for (var _d = true, _e = __asyncValues(this.client.iterMessages(this.entity, {
+                    for (var _b = __asyncValues(this.client.iterMessages(this.entity, {
                         limit: 1,
                         offsetDate: offsetDate,
-                    })), _f; _f = await _e.next(), _a = _f.done, !_a; _d = true) {
-                        _c = _f.value;
-                        _d = false;
-                        const m = _c;
+                    })), _c; _c = await _b.next(), !_c.done;) {
+                        const m = _c.value;
                         this.request.offsetId = m.id + 1;
                     }
                 }
                 catch (e_1_1) { e_1 = { error: e_1_1 }; }
                 finally {
                     try {
-                        if (!_d && !_a && (_b = _e.return)) await _b.call(_e);
+                        if (_c && !_c.done && (_a = _b.return)) await _a.call(_b);
                     }
                     finally { if (e_1) throw e_1.error; }
                 }
@@ -209,7 +196,7 @@ class _MessagesIter extends requestIter_1.RequestIter {
         }
         const entities = new Map();
         for (const x of [...r.users, ...r.chats]) {
-            entities.set((0, Utils_1.getPeerId)(x), x);
+            entities.set(Utils_1.getPeerId(x), x);
         }
         const messages = this.reverse
             ? r.messages.reverse()
@@ -291,7 +278,7 @@ class _IDsIter extends requestIter_1.RequestIter {
         this._entity = entity
             ? await this.client.getInputEntity(entity)
             : undefined;
-        this._ty = this._entity ? (0, Helpers_1._entityType)(this._entity) : undefined;
+        this._ty = this._entity ? Helpers_1._entityType(this._entity) : undefined;
         if (!this.waitTime) {
             this.waitTime = this.limit > 300 ? 10 : 0;
         }
@@ -331,7 +318,7 @@ class _IDsIter extends requestIter_1.RequestIter {
                 id: ids,
             }));
             if (this._entity) {
-                fromId = await (0, users_1._getPeer)(this.client, this._entity);
+                fromId = await users_1._getPeer(this.client, this._entity);
             }
         }
         if (r instanceof tl_1.Api.messages.MessagesNotModified) {
@@ -380,7 +367,7 @@ function iterMessages(client, entity, options) {
     const { limit, offsetDate, offsetId, maxId, minId, addOffset, search, filter, fromUser, waitTime, ids, reverse, replyTo, } = Object.assign(Object.assign({}, IterMessagesDefaults), options);
     if (ids) {
         let idsArray;
-        if (!(0, Helpers_1.isArrayLike)(ids)) {
+        if (!Helpers_1.isArrayLike(ids)) {
             idsArray = [ids];
         }
         else {
@@ -410,9 +397,10 @@ function iterMessages(client, entity, options) {
         replyTo: replyTo,
     });
 }
+exports.iterMessages = iterMessages;
 /** @hidden */
 async function getMessages(client, entity, params) {
-    var _a, e_2, _b, _c;
+    var e_2, _a;
     if (Object.keys(params).length == 1 && params.limit === undefined) {
         if (params.minId === undefined && params.maxId === undefined) {
             params.limit = undefined;
@@ -423,19 +411,17 @@ async function getMessages(client, entity, params) {
     }
     const it = client.iterMessages(entity, params);
     const ids = params.ids;
-    if (ids && !(0, Helpers_1.isArrayLike)(ids)) {
+    if (ids && !Helpers_1.isArrayLike(ids)) {
         try {
-            for (var _d = true, it_1 = __asyncValues(it), it_1_1; it_1_1 = await it_1.next(), _a = it_1_1.done, !_a; _d = true) {
-                _c = it_1_1.value;
-                _d = false;
-                const message = _c;
+            for (var it_1 = __asyncValues(it), it_1_1; it_1_1 = await it_1.next(), !it_1_1.done;) {
+                const message = it_1_1.value;
                 return [message];
             }
         }
         catch (e_2_1) { e_2 = { error: e_2_1 }; }
         finally {
             try {
-                if (!_d && !_a && (_b = it_1.return)) await _b.call(it_1);
+                if (it_1_1 && !it_1_1.done && (_a = it_1.return)) await _a.call(it_1);
             }
             finally { if (e_2) throw e_2.error; }
         }
@@ -443,6 +429,7 @@ async function getMessages(client, entity, params) {
     }
     return (await it.collect());
 }
+exports.getMessages = getMessages;
 // region Message
 /** @hidden */
 async function sendMessage(client, 
@@ -486,8 +473,8 @@ entity,
     let replyObject = undefined;
     if (replyTo != undefined) {
         replyObject = new tl_1.Api.InputReplyToMessage({
-            replyToMsgId: (0, Utils_1.getMessageId)(replyTo),
-            topMsgId: (0, Utils_1.getMessageId)(topMsgId),
+            replyToMsgId: Utils_1.getMessageId(replyTo),
+            topMsgId: Utils_1.getMessageId(topMsgId),
         });
     }
     if (message && message instanceof tl_1.Api.Message) {
@@ -528,7 +515,7 @@ entity,
     }
     else {
         if (formattingEntities == undefined) {
-            [message, formattingEntities] = await (0, messageParse_1._parseMessageText)(client, message || "", parseMode);
+            [message, formattingEntities] = await messageParse_1._parseMessageText(client, message || "", parseMode);
         }
         if (!message) {
             throw new Error("The message cannot be empty unless a file is provided");
@@ -550,7 +537,7 @@ entity,
     if (result instanceof tl_1.Api.UpdateShortSentMessage) {
         const msg = new tl_1.Api.Message({
             id: result.id,
-            peerId: await (0, users_1._getPeer)(client, entity),
+            peerId: await users_1._getPeer(client, entity),
             message: message,
             date: result.date,
             out: result.out,
@@ -564,9 +551,10 @@ entity,
     }
     return client._getResponseMessage(request, result, entity);
 }
+exports.sendMessage = sendMessage;
 /** @hidden */
 async function forwardMessages(client, entity, { messages, fromPeer, silent, schedule, noforwards, dropAuthor, }) {
-    if (!(0, Helpers_1.isArrayLike)(messages)) {
+    if (!Helpers_1.isArrayLike(messages)) {
         messages = [messages];
     }
     entity = await client.getInputEntity(entity);
@@ -579,7 +567,7 @@ async function forwardMessages(client, entity, { messages, fromPeer, silent, sch
         if (m instanceof tl_1.Api.Message) {
             return m.chatId;
         }
-        let msgId = (0, Utils_1.parseID)(m);
+        let msgId = Utils_1.parseID(m);
         if (msgId) {
             if (fromPeerId !== undefined) {
                 return fromPeerId;
@@ -591,7 +579,7 @@ async function forwardMessages(client, entity, { messages, fromPeer, silent, sch
         }
     };
     const sent = [];
-    for (let [chatId, chunk] of (0, Helpers_1.groupBy)(messages, getKey)) {
+    for (let [chatId, chunk] of Helpers_1.groupBy(messages, getKey)) {
         let chat;
         let numbers = [];
         if (typeof chunk[0] == "number") {
@@ -617,6 +605,7 @@ async function forwardMessages(client, entity, { messages, fromPeer, silent, sch
     }
     return sent;
 }
+exports.forwardMessages = forwardMessages;
 /** @hidden */
 async function editMessage(client, entity, { message, text, parseMode, formattingEntities, linkPreview = true, file, forceDocument, buttons, schedule, }) {
     if (typeof message === "number" &&
@@ -631,14 +620,14 @@ async function editMessage(client, entity, { message, text, parseMode, formattin
     let entities;
     let inputMedia;
     if (file) {
-        const { fileHandle, media, image } = await (0, uploads_1._fileToMedia)(client, {
+        const { fileHandle, media, image } = await uploads_1._fileToMedia(client, {
             file,
             forceDocument,
         });
         inputMedia = media;
     }
     if (message instanceof tl_1.Api.Message) {
-        id = (0, Utils_1.getMessageId)(message);
+        id = Utils_1.getMessageId(message);
         text = message.message;
         entities = message.entities;
         if (buttons == undefined) {
@@ -648,7 +637,7 @@ async function editMessage(client, entity, { message, text, parseMode, formattin
             markup = client.buildReplyMarkup(buttons);
         }
         if (message.media) {
-            inputMedia = (0, Utils_1.getInputMedia)(message.media, { forceDocument });
+            inputMedia = Utils_1.getInputMedia(message.media, { forceDocument });
         }
     }
     else {
@@ -657,7 +646,7 @@ async function editMessage(client, entity, { message, text, parseMode, formattin
         }
         id = message;
         if (formattingEntities == undefined) {
-            [text, entities] = await (0, messageParse_1._parseMessageText)(client, text || "", parseMode);
+            [text, entities] = await messageParse_1._parseMessageText(client, text || "", parseMode);
         }
         else {
             entities = formattingEntities;
@@ -677,12 +666,13 @@ async function editMessage(client, entity, { message, text, parseMode, formattin
     const result = await client.invoke(request);
     return client._getResponseMessage(request, result, entity);
 }
+exports.editMessage = editMessage;
 /** @hidden */
 async function deleteMessages(client, entity, messageIds, { revoke = false }) {
     let ty = Helpers_1._EntityType.USER;
     if (entity) {
         entity = await client.getInputEntity(entity);
-        ty = (0, Helpers_1._entityType)(entity);
+        ty = Helpers_1._entityType(entity);
     }
     const ids = [];
     for (const messageId of messageIds) {
@@ -717,14 +707,17 @@ async function deleteMessages(client, entity, messageIds, { revoke = false }) {
     }
     return Promise.all(results);
 }
+exports.deleteMessages = deleteMessages;
 /** @hidden */
 async function pinMessage(client, entity, message, pinMessageParams) {
     return await _pin(client, entity, message, false, pinMessageParams === null || pinMessageParams === void 0 ? void 0 : pinMessageParams.notify, pinMessageParams === null || pinMessageParams === void 0 ? void 0 : pinMessageParams.pmOneSide);
 }
+exports.pinMessage = pinMessage;
 /** @hidden */
 async function unpinMessage(client, entity, message, unpinMessageParams) {
     return await _pin(client, entity, message, true, unpinMessageParams === null || unpinMessageParams === void 0 ? void 0 : unpinMessageParams.notify, unpinMessageParams === null || unpinMessageParams === void 0 ? void 0 : unpinMessageParams.pmOneSide);
 }
+exports.unpinMessage = unpinMessage;
 /** @hidden */
 async function _pin(client, entity, message, unpin, notify = false, pmOneSide = false) {
     message = __1.utils.getMessageId(message) || 0;
@@ -756,6 +749,7 @@ async function _pin(client, entity, message, unpin, notify = false, pmOneSide = 
     // Pinning a message that doesn't exist would RPC-error earlier
     return client._getResponseMessage(request, result, entity);
 }
+exports._pin = _pin;
 /** @hidden */
 async function markAsRead(client, entity, message, markAsReadParams) {
     let maxId = (markAsReadParams === null || markAsReadParams === void 0 ? void 0 : markAsReadParams.maxId) || 0;
@@ -777,7 +771,7 @@ async function markAsRead(client, entity, message, markAsReadParams) {
             return true;
         }
     }
-    if ((0, Helpers_1._entityType)(entity) === Helpers_1._EntityType.CHANNEL) {
+    if (Helpers_1._entityType(entity) === Helpers_1._EntityType.CHANNEL) {
         return await client.invoke(new tl_1.Api.channels.ReadHistory({ channel: entity, maxId }));
     }
     else {
@@ -785,6 +779,7 @@ async function markAsRead(client, entity, message, markAsReadParams) {
         return true;
     }
 }
+exports.markAsRead = markAsRead;
 /** @hidden */
 async function getCommentData(client, entity, message) {
     const result = await client.invoke(new tl_1.Api.messages.GetDiscussionMessage({
@@ -805,4 +800,5 @@ async function getCommentData(client, entity, message) {
         replyTo: relevantMessage.id,
     };
 }
+exports.getCommentData = getCommentData;
 // TODO do the rest

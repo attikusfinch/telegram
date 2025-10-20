@@ -33,7 +33,7 @@ class MTProtoPlainSender {
     async send(request) {
         let body = request.getBytes();
         let msgId = this._state._getNewMsgId();
-        const m = (0, Helpers_1.toSignedLittleBuffer)(msgId, 8);
+        const m = Helpers_1.toSignedLittleBuffer(msgId, 8);
         const b = Buffer.alloc(4);
         b.writeInt32LE(body.length, 0);
         const res = Buffer.concat([
@@ -47,11 +47,11 @@ class MTProtoPlainSender {
         }
         const reader = new extensions_1.BinaryReader(body);
         const authKeyId = reader.readLong();
-        if (authKeyId.neq((0, big_integer_1.default)(0))) {
+        if (authKeyId.neq(big_integer_1.default(0))) {
             throw new Error("Bad authKeyId");
         }
         msgId = reader.readLong();
-        if (msgId.eq((0, big_integer_1.default)(0))) {
+        if (msgId.eq(big_integer_1.default(0))) {
             throw new Error("Bad msgId");
         }
         /** ^ We should make sure that the read ``msg_id`` is greater

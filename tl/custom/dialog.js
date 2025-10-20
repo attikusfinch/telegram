@@ -7,9 +7,6 @@ const draft_1 = require("./draft");
 const Helpers_1 = require("../../Helpers");
 const inspect_1 = require("../../inspect");
 class Dialog {
-    [inspect_1.inspect.custom]() {
-        return (0, Helpers_1.betterConsoleLog)(this);
-    }
     constructor(client, dialog, entities, message) {
         this._client = client;
         this.dialog = dialog;
@@ -18,11 +15,11 @@ class Dialog {
         this.archived = dialog.folderId != undefined;
         this.message = message;
         this.date = this.message.date;
-        this.entity = entities.get((0, Utils_1.getPeerId)(dialog.peer));
-        this.inputEntity = (0, Utils_1.getInputPeer)(this.entity);
+        this.entity = entities.get(Utils_1.getPeerId(dialog.peer));
+        this.inputEntity = Utils_1.getInputPeer(this.entity);
         if (this.entity) {
-            this.id = (0, Helpers_1.returnBigInt)((0, Utils_1.getPeerId)(this.entity)); // ^ May be InputPeerSelf();
-            this.name = this.title = (0, Utils_1.getDisplayName)(this.entity);
+            this.id = Helpers_1.returnBigInt(Utils_1.getPeerId(this.entity)); // ^ May be InputPeerSelf();
+            this.name = this.title = Utils_1.getDisplayName(this.entity);
         }
         this.unreadCount = dialog.unreadCount;
         this.unreadMentionsCount = dialog.unreadMentionsCount;
@@ -35,6 +32,9 @@ class Dialog {
             this.entity instanceof api_1.Api.ChatForbidden ||
             (this.entity instanceof api_1.Api.Channel && this.entity.megagroup));
         this.isChannel = this.entity instanceof api_1.Api.Channel;
+    }
+    [inspect_1.inspect.custom]() {
+        return Helpers_1.betterConsoleLog(this);
     }
 }
 exports.Dialog = Dialog;

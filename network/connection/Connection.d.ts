@@ -1,3 +1,4 @@
+/// <reference types="node" />
 import { Logger, PromisedNetSockets, PromisedWebSockets } from "../../extensions";
 import { AsyncQueue } from "../../extensions";
 import { AbridgedPacketCodec } from "./TCPAbridged";

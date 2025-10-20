@@ -3,11 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CustomFile = void 0;
-exports.uploadFile = uploadFile;
-exports._fileToMedia = _fileToMedia;
-exports._sendAlbum = _sendAlbum;
-exports.sendFile = sendFile;
+exports.sendFile = exports._sendAlbum = exports._fileToMedia = exports.uploadFile = exports.CustomFile = void 0;
 const tl_1 = require("../tl");
 const Helpers_1 = require("../Helpers");
 const Utils_1 = require("../Utils");
@@ -74,9 +70,9 @@ async function uploadFile(client, fileParams) {
     const { file, onProgress } = fileParams;
     let { workers } = fileParams;
     const { name, size } = file;
-    const fileId = (0, Helpers_1.readBigIntFromBuffer)((0, Helpers_1.generateRandomBytes)(8), true, true);
+    const fileId = Helpers_1.readBigIntFromBuffer(Helpers_1.generateRandomBytes(8), true, true);
     const isLarge = size > LARGE_FILE_THRESHOLD;
-    const partSize = (0, Utils_1.getAppropriatedPartSize)((0, big_integer_1.default)(size)) * KB_TO_BYTES;
+    const partSize = Utils_1.getAppropriatedPartSize(big_integer_1.default(size)) * KB_TO_BYTES;
     const partCount = Math.floor((size + partSize - 1) / partSize);
     const buffer = await getFileBuffer(file, size, fileParams.maxBufferSize || BUFFER_SIZE_20MB - 1);
     // Make sure a new sender can be created before starting upload
@@ -128,11 +124,11 @@ async function uploadFile(client, fileParams) {
                     }
                     catch (err) {
                         if (sender && !sender.isConnected()) {
-                            await (0, Helpers_1.sleep)(DISCONNECT_SLEEP);
+                            await Helpers_1.sleep(DISCONNECT_SLEEP);
                             continue;
                         }
                         else if (err instanceof index_1.errors.FloodWaitError) {
-                            await (0, Helpers_1.sleep)(err.seconds * 1000);
+                            await Helpers_1.sleep(err.seconds * 1000);
                             continue;
                         }
                         throw err;
@@ -163,6 +159,7 @@ async function uploadFile(client, fileParams) {
             md5Checksum: "", // This is not a "flag", so not sure if we can make it optional.
         });
 }
+exports.uploadFile = uploadFile;
 /** @hidden */
 async function _fileToMedia(client, { file, forceDocument, fileSize, progressCallback, attributes, thumb, voiceNote = false, videoNote = false, supportsStreaming = false, mimeType, asImage, workers = 1, }) {
     if (!file) {
@@ -317,6 +314,7 @@ async function _fileToMedia(client, { file, forceDocument, fileSize, progressCal
         image: asImage,
     };
 }
+exports._fileToMedia = _fileToMedia;
 /** @hidden */
 async function _sendAlbum(client, entity, { file, caption, forceDocument = false, fileSize, clearDraft = false, progressCallback, replyTo, attributes, thumb, parseMode, voiceNote = false, videoNote = false, silent, supportsStreaming = false, scheduleDate, workers = 1, noforwards, commentTo, topMsgId, }) {
     entity = await client.getInputEntity(entity);
@@ -335,10 +333,10 @@ async function _sendAlbum(client, entity, { file, caption, forceDocument = false
     }
     const captions = [];
     for (const c of caption) {
-        captions.push(await (0, messageParse_1._parseMessageText)(client, c, parseMode));
+        captions.push(await messageParse_1._parseMessageText(client, c, parseMode));
     }
     if (commentTo != undefined) {
-        const discussionData = await (0, messages_1.getCommentData)(client, entity, commentTo);
+        const discussionData = await messages_1.getCommentData(client, entity, commentTo);
         entity = discussionData.entity;
         replyTo = discussionData.replyTo;
     }
@@ -372,7 +370,7 @@ async function _sendAlbum(client, entity, { file, caption, forceDocument = false
                 media,
             }));
             if (r instanceof tl_1.Api.MessageMediaPhoto) {
-                media = (0, Utils_1.getInputMedia)(r.photo);
+                media = Utils_1.getInputMedia(r.photo);
             }
         }
         else if (media instanceof tl_1.Api.InputMediaUploadedDocument) {
@@ -381,7 +379,7 @@ async function _sendAlbum(client, entity, { file, caption, forceDocument = false
                 media,
             }));
             if (r instanceof tl_1.Api.MessageMediaDocument) {
-                media = (0, Utils_1.getInputMedia)(r.document);
+                media = Utils_1.getInputMedia(r.document);
             }
         }
         let text = "";
@@ -398,8 +396,8 @@ async function _sendAlbum(client, entity, { file, caption, forceDocument = false
     let replyObject = undefined;
     if (replyTo != undefined) {
         replyObject = new tl_1.Api.InputReplyToMessage({
-            replyToMsgId: (0, Utils_1.getMessageId)(replyTo),
-            topMsgId: (0, Utils_1.getMessageId)(topMsgId),
+            replyToMsgId: Utils_1.getMessageId(replyTo),
+            topMsgId: Utils_1.getMessageId(topMsgId),
         });
     }
     const result = await client.invoke(new tl_1.Api.messages.SendMultiMedia({
@@ -414,6 +412,7 @@ async function _sendAlbum(client, entity, { file, caption, forceDocument = false
     const randomIds = albumFiles.map((m) => m.randomId);
     return client._getResponseMessage(randomIds, result, entity);
 }
+exports._sendAlbum = _sendAlbum;
 /** @hidden */
 async function sendFile(client, entity, { file, caption, forceDocument = false, fileSize, clearDraft = false, progressCallback, replyTo, attributes, thumb, parseMode, formattingEntities, voiceNote = false, videoNote = false, buttons, silent, supportsStreaming = false, scheduleDate, workers = 1, noforwards, commentTo, topMsgId, }) {
     if (!file) {
@@ -424,7 +423,7 @@ async function sendFile(client, entity, { file, caption, forceDocument = false, 
     }
     entity = await client.getInputEntity(entity);
     if (commentTo != undefined) {
-        const discussionData = await (0, messages_1.getCommentData)(client, entity, commentTo);
+        const discussionData = await messages_1.getCommentData(client, entity, commentTo);
         entity = discussionData.entity;
         replyTo = discussionData.replyTo;
     }
@@ -455,7 +454,7 @@ async function sendFile(client, entity, { file, caption, forceDocument = false, 
         msgEntities = formattingEntities;
     }
     else {
-        [caption, msgEntities] = await (0, messageParse_1._parseMessageText)(client, caption, parseMode);
+        [caption, msgEntities] = await messageParse_1._parseMessageText(client, caption, parseMode);
     }
     const { fileHandle, media, image } = await _fileToMedia(client, {
         file: file,
@@ -477,8 +476,8 @@ async function sendFile(client, entity, { file, caption, forceDocument = false, 
     let replyObject = undefined;
     if (replyTo != undefined) {
         replyObject = new tl_1.Api.InputReplyToMessage({
-            replyToMsgId: (0, Utils_1.getMessageId)(replyTo),
-            topMsgId: (0, Utils_1.getMessageId)(topMsgId),
+            replyToMsgId: Utils_1.getMessageId(replyTo),
+            topMsgId: Utils_1.getMessageId(topMsgId),
         });
     }
     const request = new tl_1.Api.messages.SendMedia({
@@ -496,6 +495,7 @@ async function sendFile(client, entity, { file, caption, forceDocument = false, 
     const result = await client.invoke(request);
     return client._getResponseMessage(request, result, entity);
 }
+exports.sendFile = sendFile;
 function fileToBuffer(file) {
     if (typeof File !== "undefined" && file instanceof File) {
         return new Response(file).arrayBuffer();

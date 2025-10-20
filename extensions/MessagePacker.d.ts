@@ -1,3 +1,4 @@
+/// <reference types="node" />
 import type { MTProtoState } from "../network/MTProtoState";
 import type { RequestState } from "../network/RequestState";
 export declare class MessagePacker {

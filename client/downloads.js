@@ -1,11 +1,7 @@
 "use strict";
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
 }) : (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     o[k2] = m[k];
@@ -15,23 +11,13 @@ var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (
 }) : function(o, v) {
     o["default"] = v;
 });
-var __importStar = (this && this.__importStar) || (function () {
-    var ownKeys = function(o) {
-        ownKeys = Object.getOwnPropertyNames || function (o) {
-            var ar = [];
-            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
-            return ar;
-        };
-        return ownKeys(o);
-    };
-    return function (mod) {
-        if (mod && mod.__esModule) return mod;
-        var result = {};
-        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
-        __setModuleDefault(result, mod);
-        return result;
-    };
-})();
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 var __asyncValues = (this && this.__asyncValues) || function (o) {
     if (!Symbol.asyncIterator) throw new TypeError("Symbol.asyncIterator is not defined.");
     var m = o[Symbol.asyncIterator], i;
@@ -43,16 +29,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.GenericDownloadIter = exports.DirectDownloadIter = void 0;
-exports.iterDownload = iterDownload;
-exports.downloadFileV2 = downloadFileV2;
-exports.downloadMedia = downloadMedia;
-exports._downloadDocument = _downloadDocument;
-exports._downloadContact = _downloadContact;
-exports._downloadWebDocument = _downloadWebDocument;
-exports._downloadCachedPhotoSize = _downloadCachedPhotoSize;
-exports._downloadPhoto = _downloadPhoto;
-exports.downloadProfilePhoto = downloadProfilePhoto;
+exports.downloadProfilePhoto = exports._downloadPhoto = exports._downloadCachedPhotoSize = exports._downloadWebDocument = exports._downloadContact = exports._downloadDocument = exports.downloadMedia = exports.downloadFileV2 = exports.iterDownload = exports.GenericDownloadIter = exports.DirectDownloadIter = void 0;
 const tl_1 = require("../tl");
 const Utils_1 = require("../Utils");
 const Helpers_1 = require("../Helpers");
@@ -124,7 +101,7 @@ class DirectDownloadIter extends requestIter_1.RequestIter {
                 }
                 this._timedOut = true;
                 this.client._log.info("Got timeout while downloading file, retrying once");
-                await (0, Helpers_1.sleep)(TIMED_OUT_SLEEP);
+                await Helpers_1.sleep(TIMED_OUT_SLEEP);
                 return await this._request();
             }
             else if (e instanceof errors_1.FileMigrateError) {
@@ -246,13 +223,14 @@ function iterDownload(client, { file, offset = big_integer_1.default.zero, strid
         msgData,
     });
 }
+exports.iterDownload = iterDownload;
 function getWriter(outputFile) {
     if (!outputFile || Buffer.isBuffer(outputFile)) {
         return new extensions_1.BinaryWriter(Buffer.alloc(0));
     }
     else if (typeof outputFile == "string") {
         // We want to make sure that the path exists.
-        return (0, fs_1.createWriteStream)(outputFile);
+        return fs_1.createWriteStream(outputFile);
     }
     else {
         return outputFile;
@@ -278,7 +256,7 @@ function returnWriterValue(writer) {
 }
 /** @hidden */
 async function downloadFileV2(client, inputLocation, { outputFile = undefined, partSizeKb = undefined, fileSize = undefined, progressCallback = undefined, dcId = undefined, msgData = undefined, }) {
-    var _a, e_1, _b, _c;
+    var e_1, _a;
     if (!partSizeKb) {
         if (!fileSize) {
             partSizeKb = 64;
@@ -295,26 +273,24 @@ async function downloadFileV2(client, inputLocation, { outputFile = undefined, p
     let downloaded = big_integer_1.default.zero;
     try {
         try {
-            for (var _d = true, _e = __asyncValues(iterDownload(client, {
+            for (var _b = __asyncValues(iterDownload(client, {
                 file: inputLocation,
                 requestSize: partSize,
                 dcId: dcId,
                 msgData: msgData,
-            })), _f; _f = await _e.next(), _a = _f.done, !_a; _d = true) {
-                _c = _f.value;
-                _d = false;
-                const chunk = _c;
+            })), _c; _c = await _b.next(), !_c.done;) {
+                const chunk = _c.value;
                 await writer.write(chunk);
                 downloaded = downloaded.add(chunk.length);
                 if (progressCallback) {
-                    await progressCallback(downloaded, (0, big_integer_1.default)(fileSize || big_integer_1.default.zero));
+                    await progressCallback(downloaded, big_integer_1.default(fileSize || big_integer_1.default.zero));
                 }
             }
         }
         catch (e_1_1) { e_1 = { error: e_1_1 }; }
         finally {
             try {
-                if (!_d && !_a && (_b = _e.return)) await _b.call(_e);
+                if (_c && !_c.done && (_a = _b.return)) await _a.call(_b);
             }
             finally { if (e_1) throw e_1.error; }
         }
@@ -324,6 +300,7 @@ async function downloadFileV2(client, inputLocation, { outputFile = undefined, p
         closeWriter(writer);
     }
 }
+exports.downloadFileV2 = downloadFileV2;
 class Foreman {
     constructor(maxWorkers) {
         this.maxWorkers = maxWorkers;
@@ -401,6 +378,7 @@ async function downloadMedia(client, messageOrMedia, outputFile, thumb, progress
         return Buffer.alloc(0);
     }
 }
+exports.downloadMedia = downloadMedia;
 /** @hidden */
 async function _downloadDocument(client, doc, outputFile, date, thumb, progressCallback, msgData) {
     if (doc instanceof tl_1.Api.MessageMediaDocument) {
@@ -431,19 +409,22 @@ async function _downloadDocument(client, doc, outputFile, date, thumb, progressC
         thumbSize: size && "type" in size ? size.type : "",
     }), {
         outputFile: outputFile,
-        fileSize: size && "size" in size ? (0, big_integer_1.default)(size.size) : doc.size,
+        fileSize: size && "size" in size ? big_integer_1.default(size.size) : doc.size,
         progressCallback: progressCallback,
         msgData: msgData,
     });
 }
+exports._downloadDocument = _downloadDocument;
 /** @hidden */
 async function _downloadContact(client, media, args) {
     throw new Error("not implemented");
 }
+exports._downloadContact = _downloadContact;
 /** @hidden */
 async function _downloadWebDocument(client, media, args) {
     throw new Error("not implemented");
 }
+exports._downloadWebDocument = _downloadWebDocument;
 function pickFileSize(sizes, sizeType) {
     if (!sizeType || !sizes || !sizes.length) {
         return undefined;
@@ -510,7 +491,7 @@ async function _downloadCachedPhotoSize(size, outputFile) {
     // No need to download anything, simply write the bytes
     let data;
     if (size instanceof tl_1.Api.PhotoStrippedSize) {
-        data = (0, Utils_1.strippedPhotoToJpg)(size.bytes);
+        data = Utils_1.strippedPhotoToJpg(size.bytes);
     }
     else {
         data = size.bytes;
@@ -524,6 +505,7 @@ async function _downloadCachedPhotoSize(size, outputFile) {
     }
     return returnWriterValue(writer);
 }
+exports._downloadCachedPhotoSize = _downloadCachedPhotoSize;
 /** @hidden */
 function getProperFilename(file, fileType, extension, date) {
     if (!file || typeof file != "string") {
@@ -573,11 +555,12 @@ async function _downloadPhoto(client, photo, file, date, thumb, progressCallback
         thumbSize: "type" in size ? size.type : "",
     }), {
         outputFile: file,
-        fileSize: (0, big_integer_1.default)(fileSize),
+        fileSize: big_integer_1.default(fileSize),
         progressCallback: progressCallback,
         dcId: photo.dcId,
     });
 }
+exports._downloadPhoto = _downloadPhoto;
 /** @hidden */
 async function downloadProfilePhoto(client, entity, fileParams) {
     let photo;
@@ -612,3 +595,4 @@ async function downloadProfilePhoto(client, entity, fileParams) {
         dcId,
     });
 }
+exports.downloadProfilePhoto = downloadProfilePhoto;

@@ -1,3 +1,4 @@
+/// <reference types="node" />
 import { ProxyInterface } from "../network/connection/TCPMTProxy";
 export declare class PromisedNetSockets {
     private client?;

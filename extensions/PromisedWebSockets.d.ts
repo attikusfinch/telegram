@@ -1,3 +1,4 @@
+/// <reference types="node" />
 export declare class PromisedWebSockets {
     private closed;
     private stream;

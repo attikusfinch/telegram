@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.patchAll = patchAll;
+exports.patchAll = void 0;
 const api_1 = require("../api");
 const message_1 = require("../custom/message");
 function getGetter(obj, prop) {
@@ -74,3 +74,4 @@ function patchAll() {
     patchClass(api_1.Api.MessageService);
     patchClass(api_1.Api.MessageEmpty);
 }
+exports.patchAll = patchAll;

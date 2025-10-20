@@ -77,8 +77,8 @@ class MemorySession extends Abstract_1.Session {
         let p;
         let markedId;
         try {
-            p = (0, Utils_1.getInputPeer)(e, false);
-            markedId = (0, Utils_1.getPeerId)(p);
+            p = Utils_1.getInputPeer(e, false);
+            markedId = Utils_1.getPeerId(p);
         }
         catch (e) {
             return;
@@ -99,12 +99,12 @@ class MemorySession extends Abstract_1.Session {
             username = username.toLowerCase();
         }
         const phone = e.phone;
-        const name = (0, Utils_1.getDisplayName)(e);
+        const name = Utils_1.getDisplayName(e);
         return this._entityValuesToRow(markedId, pHash, username, phone, name);
     }
     _entitiesToRows(tlo) {
         let entities = [];
-        if (!(tlo.classType === "constructor") && (0, Helpers_1.isArrayLike)(tlo)) {
+        if (!(tlo.classType === "constructor") && Helpers_1.isArrayLike(tlo)) {
             // This may be a list of users already for instance
             entities = tlo;
         }
@@ -119,10 +119,10 @@ class MemorySession extends Abstract_1.Session {
                 if ("channel" in tlo) {
                     entities.push(tlo.channel);
                 }
-                if ("chats" in tlo && (0, Helpers_1.isArrayLike)(tlo.chats)) {
+                if ("chats" in tlo && Helpers_1.isArrayLike(tlo.chats)) {
                     entities = entities.concat(tlo.chats);
                 }
-                if ("users" in tlo && (0, Helpers_1.isArrayLike)(tlo.users)) {
+                if ("users" in tlo && Helpers_1.isArrayLike(tlo.users)) {
                     entities = entities.concat(tlo.users);
                 }
             }
@@ -177,9 +177,9 @@ class MemorySession extends Abstract_1.Session {
         }
         else {
             const ids = [
-                __1.utils.getPeerId(new tl_1.Api.PeerUser({ userId: (0, Helpers_1.returnBigInt)(id) })),
-                __1.utils.getPeerId(new tl_1.Api.PeerChat({ chatId: (0, Helpers_1.returnBigInt)(id) })),
-                __1.utils.getPeerId(new tl_1.Api.PeerChannel({ channelId: (0, Helpers_1.returnBigInt)(id) })),
+                __1.utils.getPeerId(new tl_1.Api.PeerUser({ userId: Helpers_1.returnBigInt(id) })),
+                __1.utils.getPeerId(new tl_1.Api.PeerChat({ chatId: Helpers_1.returnBigInt(id) })),
+                __1.utils.getPeerId(new tl_1.Api.PeerChannel({ channelId: Helpers_1.returnBigInt(id) })),
             ];
             for (const e of this._entities) {
                 // id, hash, username, phone, name
@@ -242,8 +242,8 @@ class MemorySession extends Abstract_1.Session {
         }
         if (result) {
             let entityId = result[0]; // unpack resulting tuple
-            const entityHash = (0, big_integer_1.default)(result[1]);
-            const resolved = __1.utils.resolveId((0, Helpers_1.returnBigInt)(entityId));
+            const entityHash = big_integer_1.default(result[1]);
+            const resolved = __1.utils.resolveId(Helpers_1.returnBigInt(entityId));
             entityId = resolved[0];
             const kind = resolved[1];
             // removes the mark and returns type of entity

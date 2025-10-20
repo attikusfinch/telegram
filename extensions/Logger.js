@@ -10,7 +10,7 @@ var LogLevel;
     LogLevel["WARN"] = "warn";
     LogLevel["INFO"] = "info";
     LogLevel["DEBUG"] = "debug";
-})(LogLevel || (exports.LogLevel = LogLevel = {}));
+})(LogLevel = exports.LogLevel || (exports.LogLevel = {}));
 class Logger {
     constructor(level) {
         this.levels = ["error", "warn", "info", "debug"];

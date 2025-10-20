@@ -1,3 +1,4 @@
+/// <reference types="node" />
 import type { Entity, EntityLike } from "../../define";
 import type { TelegramClient } from "../../client/TelegramClient";
 import { inspect } from "../../inspect";

@@ -3,18 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.invoke = invoke;
-exports.getMe = getMe;
-exports.isBot = isBot;
-exports.isUserAuthorized = isUserAuthorized;
-exports.getEntity = getEntity;
-exports.getInputEntity = getInputEntity;
-exports._getEntityFromString = _getEntityFromString;
-exports.getPeerId = getPeerId;
-exports._getPeer = _getPeer;
-exports._getInputDialog = _getInputDialog;
-exports._getInputNotify = _getInputNotify;
-exports._selfId = _selfId;
+exports._selfId = exports._getInputNotify = exports._getInputDialog = exports._getPeer = exports.getPeerId = exports._getEntityFromString = exports.getInputEntity = exports.getEntity = exports.isUserAuthorized = exports.isBot = exports.getMe = exports.invoke = void 0;
 const tl_1 = require("../tl");
 const Utils_1 = require("../Utils");
 const Helpers_1 = require("../Helpers");
@@ -61,13 +50,13 @@ async function invoke(client, request, dcId, otherSender) {
                 e.errorMessage === "RPC_CALL_FAIL" ||
                 e.errorMessage === "RPC_MCGET_FAIL") {
                 client._log.warn(`Telegram is having internal issues ${e.constructor.name}`);
-                await (0, Helpers_1.sleep)(2000);
+                await Helpers_1.sleep(2000);
             }
             else if (e instanceof __1.errors.FloodWaitError ||
                 e instanceof __1.errors.FloodTestPhoneWaitError) {
                 if (e.seconds <= client.floodSleepThreshold) {
                     client._log.info(`Sleeping for ${e.seconds}s on flood wait (Caused by ${request.className})`);
-                    await (0, Helpers_1.sleep)(e.seconds * 1000);
+                    await Helpers_1.sleep(e.seconds * 1000);
                 }
                 else {
                     state.finished.resolve();
@@ -97,7 +86,7 @@ async function invoke(client, request, dcId, otherSender) {
             }
             else if (e.message === "CONNECTION_NOT_INITED") {
                 await client.disconnect();
-                await (0, Helpers_1.sleep)(2000);
+                await Helpers_1.sleep(2000);
                 await client.connect();
             }
             else {
@@ -109,6 +98,7 @@ async function invoke(client, request, dcId, otherSender) {
     }
     throw new Error(`Request was unsuccessful ${attempt} time(s)`);
 }
+exports.invoke = invoke;
 /** @hidden */
 async function getMe(client, inputPeer) {
     if (inputPeer && client._selfInputPeer) {
@@ -123,6 +113,7 @@ async function getMe(client, inputPeer) {
         ? client._selfInputPeer
         : me;
 }
+exports.getMe = getMe;
 /** @hidden */
 async function isBot(client) {
     if (client._bot === undefined) {
@@ -133,6 +124,7 @@ async function isBot(client) {
     }
     return client._bot;
 }
+exports.isBot = isBot;
 /** @hidden */
 async function isUserAuthorized(client) {
     try {
@@ -143,11 +135,12 @@ async function isUserAuthorized(client) {
         return false;
     }
 }
+exports.isUserAuthorized = isUserAuthorized;
 /** @hidden */
 async function getEntity(client, entity) {
-    const single = !(0, Helpers_1.isArrayLike)(entity);
+    const single = !Helpers_1.isArrayLike(entity);
     let entityArray = [];
-    if ((0, Helpers_1.isArrayLike)(entity)) {
+    if (Helpers_1.isArrayLike(entity)) {
         entityArray = entity;
     }
     else {
@@ -156,7 +149,7 @@ async function getEntity(client, entity) {
     const inputs = [];
     for (const x of entityArray) {
         if (typeof x === "string") {
-            const valid = (0, Utils_1.parseID)(x);
+            const valid = Utils_1.parseID(x);
             if (valid) {
                 inputs.push(await client.getInputEntity(valid));
             }
@@ -175,7 +168,7 @@ async function getEntity(client, entity) {
     ]);
     for (const x of inputs) {
         try {
-            lists.get((0, Helpers_1._entityType)(x)).push(x);
+            lists.get(Helpers_1._entityType(x)).push(x);
         }
         catch (e) { }
     }
@@ -196,13 +189,13 @@ async function getEntity(client, entity) {
     }
     const idEntity = new Map();
     for (const user of users) {
-        idEntity.set((0, Utils_1.getPeerId)(user), user);
+        idEntity.set(Utils_1.getPeerId(user), user);
     }
     for (const channel of channels) {
-        idEntity.set((0, Utils_1.getPeerId)(channel), channel);
+        idEntity.set(Utils_1.getPeerId(channel), channel);
     }
     for (const chat of chats) {
-        idEntity.set((0, Utils_1.getPeerId)(chat), chat);
+        idEntity.set(Utils_1.getPeerId(chat), chat);
     }
     const result = [];
     for (const x of inputs) {
@@ -210,7 +203,7 @@ async function getEntity(client, entity) {
             result.push(await _getEntityFromString(client, x));
         }
         else if (!(x instanceof tl_1.Api.InputPeerSelf)) {
-            result.push(idEntity.get((0, Utils_1.getPeerId)(x)));
+            result.push(idEntity.get(Utils_1.getPeerId(x)));
         }
         else {
             for (const [key, u] of idEntity.entries()) {
@@ -223,6 +216,7 @@ async function getEntity(client, entity) {
     }
     return single ? result[0] : result;
 }
+exports.getEntity = getEntity;
 /** @hidden */
 async function getInputEntity(client, peer) {
     // Short-circuit if the input parameter directly maps to an InputPeer
@@ -234,7 +228,7 @@ async function getInputEntity(client, peer) {
     // Next in priority is having a peer (or its ID) cached in-memory
     try {
         if (typeof peer == "string") {
-            const valid = (0, Utils_1.parseID)(peer);
+            const valid = Utils_1.parseID(peer);
             if (valid) {
                 const res = client._entityCache.get(peer);
                 if (res) {
@@ -285,7 +279,7 @@ async function getInputEntity(client, peer) {
     // If we're not a bot but the user is in our contacts, it seems to work
     // regardless. These are the only two special-cased requests.
     if (typeof peer === "number") {
-        peer = (0, Helpers_1.returnBigInt)(peer);
+        peer = Helpers_1.returnBigInt(peer);
     }
     peer = __1.utils.getPeer(peer);
     if (peer instanceof tl_1.Api.PeerUser) {
@@ -339,6 +333,7 @@ async function getInputEntity(client, peer) {
         "docs.telethon.dev/en/stable/concepts/entities.html to" +
         " find out more details.");
 }
+exports.getInputEntity = getInputEntity;
 /** @hidden */
 async function _getEntityFromString(client, string) {
     const phone = __1.utils.parsePhone(string);
@@ -390,14 +385,14 @@ async function _getEntityFromString(client, string) {
                 const pid = __1.utils.getPeerId(result.peer, false);
                 if (result.peer instanceof tl_1.Api.PeerUser) {
                     for (const x of result.users) {
-                        if ((0, Helpers_1.returnBigInt)(x.id).equals((0, Helpers_1.returnBigInt)(pid))) {
+                        if (Helpers_1.returnBigInt(x.id).equals(Helpers_1.returnBigInt(pid))) {
                             return x;
                         }
                     }
                 }
                 else {
                     for (const x of result.chats) {
-                        if ((0, Helpers_1.returnBigInt)(x.id).equals((0, Helpers_1.returnBigInt)(pid))) {
+                        if (Helpers_1.returnBigInt(x.id).equals(Helpers_1.returnBigInt(pid))) {
                             return x;
                         }
                     }
@@ -421,10 +416,11 @@ async function _getEntityFromString(client, string) {
     catch (e) { }
     throw new Error(`Cannot find any entity corresponding to "${string}"`);
 }
+exports._getEntityFromString = _getEntityFromString;
 /** @hidden */
 async function getPeerId(client, peer, addMark = true) {
     if (typeof peer == "string") {
-        const valid = (0, Utils_1.parseID)(peer);
+        const valid = Utils_1.parseID(peer);
         if (valid) {
             return __1.utils.getPeerId(peer, addMark);
         }
@@ -445,18 +441,20 @@ async function getPeerId(client, peer, addMark = true) {
     }
     return __1.utils.getPeerId(peer, addMark);
 }
+exports.getPeerId = getPeerId;
 /** @hidden */
 async function _getPeer(client, peer) {
     if (!peer) {
         return undefined;
     }
-    const [i, cls] = __1.utils.resolveId((0, Helpers_1.returnBigInt)(await client.getPeerId(peer)));
+    const [i, cls] = __1.utils.resolveId(Helpers_1.returnBigInt(await client.getPeerId(peer)));
     return new cls({
         userId: i,
         channelId: i,
         chatId: i,
     });
 }
+exports._getPeer = _getPeer;
 /** @hidden */
 async function _getInputDialog(client, dialog) {
     try {
@@ -477,6 +475,7 @@ async function _getInputDialog(client, dialog) {
         peer: dialog,
     });
 }
+exports._getInputDialog = _getInputDialog;
 /** @hidden */
 async function _getInputNotify(client, notify) {
     try {
@@ -492,7 +491,9 @@ async function _getInputNotify(client, notify) {
         peer: await client.getInputEntity(notify),
     });
 }
+exports._getInputNotify = _getInputNotify;
 /** @hidden */
 function _selfId(client) {
     return client._selfInputPeer ? client._selfInputPeer.userId : undefined;
 }
+exports._selfId = _selfId;

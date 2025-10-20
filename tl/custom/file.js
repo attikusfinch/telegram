@@ -6,11 +6,11 @@ const Utils_1 = require("../../Utils");
 const Helpers_1 = require("../../Helpers");
 const inspect_1 = require("../../inspect");
 class File {
-    [inspect_1.inspect.custom]() {
-        return (0, Helpers_1.betterConsoleLog)(this);
-    }
     constructor(media) {
         this.media = media;
+    }
+    [inspect_1.inspect.custom]() {
+        return Helpers_1.betterConsoleLog(this);
     }
     get id() {
         throw new Error("Unsupported");
@@ -49,7 +49,7 @@ class File {
     }
     get size() {
         if (this.media instanceof api_1.Api.Photo) {
-            return (0, Utils_1._photoSizeByteCount)(this.media.sizes[this.media.sizes.length - 1]);
+            return Utils_1._photoSizeByteCount(this.media.sizes[this.media.sizes.length - 1]);
         }
         else if (this.media instanceof api_1.Api.Document) {
             return this.media.size;

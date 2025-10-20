@@ -3,10 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.DEFAULT_DELIMITERS = void 0;
-exports._replaceWithMention = _replaceWithMention;
-exports._parseMessageText = _parseMessageText;
-exports._getResponseMessage = _getResponseMessage;
+exports._getResponseMessage = exports._parseMessageText = exports._replaceWithMention = exports.DEFAULT_DELIMITERS = void 0;
 const Utils_1 = require("../Utils");
 const api_1 = require("../tl/api");
 const index_1 = require("../index");
@@ -33,6 +30,7 @@ async function _replaceWithMention(client, entities, i, user) {
         return false;
     }
 }
+exports._replaceWithMention = _replaceWithMention;
 /** @hidden */
 async function _parseMessageText(client, message, parseMode) {
     if (parseMode == false) {
@@ -45,7 +43,7 @@ async function _parseMessageText(client, message, parseMode) {
         parseMode = client.parseMode;
     }
     else if (typeof parseMode === "string") {
-        parseMode = (0, Utils_1.sanitizeParseMode)(parseMode);
+        parseMode = Utils_1.sanitizeParseMode(parseMode);
     }
     const [rawMessage, msgEntities] = parseMode.parse(message);
     for (let i = msgEntities.length - 1; i >= 0; i--) {
@@ -63,6 +61,7 @@ async function _parseMessageText(client, message, parseMode) {
     }
     return [rawMessage, msgEntities];
 }
+exports._parseMessageText = _parseMessageText;
 /** @hidden */
 function _getResponseMessage(client, request, result, inputChat) {
     let updates = [];
@@ -90,7 +89,7 @@ function _getResponseMessage(client, request, result, inputChat) {
         else if (update instanceof api_1.Api.UpdateNewChannelMessage ||
             update instanceof api_1.Api.UpdateNewMessage) {
             update.message._finishInit(client, entities, inputChat);
-            if ("randomId" in request || (0, Helpers_1.isArrayLike)(request)) {
+            if ("randomId" in request || Helpers_1.isArrayLike(request)) {
                 idToMessage.set(update.message.id, update.message);
             }
             else {
@@ -99,7 +98,7 @@ function _getResponseMessage(client, request, result, inputChat) {
         }
         else if (update instanceof api_1.Api.UpdateEditMessage &&
             "peer" in request &&
-            (0, Helpers_1._entityType)(request.peer) != Helpers_1._EntityType.CHANNEL) {
+            Helpers_1._entityType(request.peer) != Helpers_1._EntityType.CHANNEL) {
             update.message._finishInit(client, entities, inputChat);
             if ("randomId" in request) {
                 idToMessage.set(update.message.id, update.message);
@@ -110,8 +109,8 @@ function _getResponseMessage(client, request, result, inputChat) {
         }
         else if (update instanceof api_1.Api.UpdateEditChannelMessage &&
             "peer" in request &&
-            (0, Utils_1.getPeerId)(request.peer) ==
-                (0, Utils_1.getPeerId)(update.message.peerId)) {
+            Utils_1.getPeerId(request.peer) ==
+                Utils_1.getPeerId(update.message.peerId)) {
             if (request.id == update.message.id) {
                 update.message._finishInit(client, entities, inputChat);
                 return update.message;
@@ -143,7 +142,7 @@ function _getResponseMessage(client, request, result, inputChat) {
         return idToMessage;
     }
     let randomId;
-    if ((0, Helpers_1.isArrayLike)(request) ||
+    if (Helpers_1.isArrayLike(request) ||
         typeof request == "number" ||
         big_integer_1.default.isInstance(request)) {
         randomId = request;
@@ -158,7 +157,7 @@ function _getResponseMessage(client, request, result, inputChat) {
         client._log.warn(`No randomId in ${request} to map to. returning undefined for ${result} (Message was empty)`);
         return undefined;
     }
-    if (!(0, Helpers_1.isArrayLike)(randomId)) {
+    if (!Helpers_1.isArrayLike(randomId)) {
         let msg = idToMessage.get(randomToId.get(randomId.toString()));
         if (!msg) {
             client._log.warn(`Request ${request.className} had missing message mapping ${result.className} (Message was empty)`);
@@ -189,3 +188,4 @@ function _getResponseMessage(client, request, result, inputChat) {
     }
     return finalToReturn;
 }
+exports._getResponseMessage = _getResponseMessage;

@@ -18,7 +18,7 @@ class FullPacketCodec extends Connection_1.PacketCodec {
         e.writeInt32LE(this._sendCounter, 4);
         data = Buffer.concat([e, data]);
         const crc = Buffer.alloc(4);
-        crc.writeUInt32LE((0, Helpers_1.crc32)(data), 0);
+        crc.writeUInt32LE(Helpers_1.crc32(data), 0);
         this._sendCounter += 1;
         return Buffer.concat([data, crc]);
     }
@@ -44,7 +44,7 @@ class FullPacketCodec extends Connection_1.PacketCodec {
         let body = await reader.readExactly(packetLen - 8);
         const checksum = body.slice(-4).readUInt32LE(0);
         body = body.slice(0, -4);
-        const validChecksum = (0, Helpers_1.crc32)(Buffer.concat([packetLenSeq, body]));
+        const validChecksum = Helpers_1.crc32(Buffer.concat([packetLenSeq, body]));
         if (!(validChecksum === checksum)) {
             throw new errors_1.InvalidChecksumError(checksum, validChecksum);
         }

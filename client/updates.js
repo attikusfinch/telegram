@@ -1,15 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.StopPropagation = void 0;
-exports.on = on;
-exports.addEventHandler = addEventHandler;
-exports.removeEventHandler = removeEventHandler;
-exports.listEventHandlers = listEventHandlers;
-exports.catchUp = catchUp;
-exports._handleUpdate = _handleUpdate;
-exports._processUpdate = _processUpdate;
-exports._dispatchUpdate = _dispatchUpdate;
-exports._updateLoop = _updateLoop;
+exports._updateLoop = exports._dispatchUpdate = exports._processUpdate = exports._handleUpdate = exports.catchUp = exports.listEventHandlers = exports.removeEventHandler = exports.addEventHandler = exports.on = exports.StopPropagation = void 0;
 const tl_1 = require("../tl");
 const network_1 = require("../network");
 const index_1 = require("../index");
@@ -41,6 +32,7 @@ function on(client, event) {
         return f;
     };
 }
+exports.on = on;
 /** @hidden */
 function addEventHandler(client, callback, event) {
     if (event == undefined) {
@@ -51,20 +43,24 @@ function addEventHandler(client, callback, event) {
     event.client = client;
     client._eventBuilders.push([event, callback]);
 }
+exports.addEventHandler = addEventHandler;
 /** @hidden */
 function removeEventHandler(client, callback, event) {
     client._eventBuilders = client._eventBuilders.filter(function (item) {
         return item[0] !== event && item[1] !== callback;
     });
 }
+exports.removeEventHandler = removeEventHandler;
 /** @hidden */
 function listEventHandlers(client) {
     return client._eventBuilders;
 }
+exports.listEventHandlers = listEventHandlers;
 /** @hidden */
 function catchUp() {
     // TODO
 }
+exports.catchUp = catchUp;
 /** @hidden */
 function _handleUpdate(client, update) {
     if (typeof update === "number") {
@@ -96,6 +92,7 @@ function _handleUpdate(client, update) {
         _processUpdate(client, update, null);
     }
 }
+exports._handleUpdate = _handleUpdate;
 /** @hidden */
 function _processUpdate(client, update, others, entities) {
     update._entities = entities || new Map();
@@ -105,6 +102,7 @@ function _processUpdate(client, update, others, entities) {
     };
     _dispatchUpdate(client, args);
 }
+exports._processUpdate = _processUpdate;
 /** @hidden */
 async function _dispatchUpdate(client, args) {
     for (const [builder, callback] of client._eventBuilders) {
@@ -129,7 +127,7 @@ async function _dispatchUpdate(client, args) {
             }
             // TODO fix others not being passed
             event = builder.build(event, callback, client._selfInputPeer
-                ? (0, Helpers_1.returnBigInt)(client._selfInputPeer.userId)
+                ? Helpers_1.returnBigInt(client._selfInputPeer.userId)
                 : undefined);
             if (event) {
                 event._client = client;
@@ -160,11 +158,12 @@ async function _dispatchUpdate(client, args) {
         }
     }
 }
+exports._dispatchUpdate = _dispatchUpdate;
 /** @hidden */
 async function _updateLoop(client) {
     let lastPongAt;
     while (!client._destroyed) {
-        await (0, Helpers_1.sleep)(PING_INTERVAL, true);
+        await Helpers_1.sleep(PING_INTERVAL, true);
         if (client._destroyed)
             break;
         if (client._sender.isReconnecting || client._isSwitchingDc) {
@@ -174,7 +173,7 @@ async function _updateLoop(client) {
         try {
             const ping = () => {
                 return client._sender.send(new tl_1.Api.PingDelayDisconnect({
-                    pingId: (0, Helpers_1.returnBigInt)((0, Helpers_1.getRandomInt)(Number.MIN_SAFE_INTEGER, Number.MAX_SAFE_INTEGER)),
+                    pingId: Helpers_1.returnBigInt(Helpers_1.getRandomInt(Number.MIN_SAFE_INTEGER, Number.MAX_SAFE_INTEGER)),
                     disconnectDelay: PING_DISCONNECT_DELAY,
                 }));
             };
@@ -226,6 +225,7 @@ async function _updateLoop(client) {
     }
     await client.disconnect();
 }
+exports._updateLoop = _updateLoop;
 /** @hidden */
 async function attempts(cb, times, pause) {
     for (let i = 0; i < times; i++) {
@@ -237,7 +237,7 @@ async function attempts(cb, times, pause) {
             if (i === times - 1) {
                 throw err;
             }
-            await (0, Helpers_1.sleep)(pause);
+            await Helpers_1.sleep(pause);
         }
     }
     return undefined;
@@ -247,7 +247,7 @@ function timeout(cb, ms) {
     let isResolved = false;
     return Promise.race([
         cb(),
-        (0, Helpers_1.sleep)(ms).then(() => isResolved ? undefined : Promise.reject(new Error("TIMEOUT"))),
+        Helpers_1.sleep(ms).then(() => isResolved ? undefined : Promise.reject(new Error("TIMEOUT"))),
     ]).finally(() => {
         isResolved = true;
     });

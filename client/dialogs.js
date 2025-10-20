@@ -3,9 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports._DialogsIter = void 0;
-exports.iterDialogs = iterDialogs;
-exports.getDialogs = getDialogs;
+exports.getDialogs = exports.iterDialogs = exports._DialogsIter = void 0;
 const tl_1 = require("../tl");
 const requestIter_1 = require("../requestIter");
 const index_1 = require("../index");
@@ -168,7 +166,9 @@ function iterDialogs(client, { limit = undefined, offsetDate = undefined, offset
         folder,
     });
 }
+exports.iterDialogs = iterDialogs;
 /** @hidden */
 async function getDialogs(client, params) {
     return (await client.iterDialogs(params).collect());
 }
+exports.getDialogs = getDialogs;

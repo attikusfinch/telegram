@@ -1,3 +1,4 @@
+/// <reference types="node" />
 import type { TelegramClient } from "./TelegramClient";
 import type { EntityLike } from "../define";
 import { TotalList } from "../Helpers";

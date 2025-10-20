@@ -1,3 +1,4 @@
+/// <reference types="node" />
 import { ObfuscatedConnection } from "./Connection";
 import { AbridgedPacketCodec } from "./TCPAbridged";
 declare class ObfuscatedIO {
