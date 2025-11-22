@@ -1,4 +1,3 @@
-/// <reference types="node" />
 import bigInt from "big-integer";
 import type { ParseInterface } from "./client/messageParse";
 import { CustomFile } from "./client/uploads";

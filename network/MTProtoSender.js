@@ -166,7 +166,7 @@ class MTProtoSender {
                 if (this._log.canSend(Logger_1.LogLevel.ERROR)) {
                     console.error(err);
                 }
-                await Helpers_1.sleep(this._delay);
+                await (0, Helpers_1.sleep)(this._delay);
             }
         }
         this.isConnecting = false;
@@ -240,7 +240,7 @@ class MTProtoSender {
         if (!this.authKey.getKey()) {
             const plain = new MTProtoPlainSender_1.MTProtoPlainSender(connection, this._log);
             this._log.debug("New auth_key attempt ...");
-            const res = await Authenticator_1.doAuthentication(plain, this._log);
+            const res = await (0, Authenticator_1.doAuthentication)(plain, this._log);
             this._log.debug("Generated new auth_key successfully");
             await this.authKey.setKey(res.authKey);
             this._state.timeOffset = res.timeOffset;
@@ -558,7 +558,7 @@ class MTProtoSender {
         }
         if (result.error) {
             // eslint-disable-next-line new-cap
-            const error = errors_1.RPCMessageToError(result.error, state.request);
+            const error = (0, errors_1.RPCMessageToError)(result.error, state.request);
             this._sendQueue.append(new RequestState_1.RequestState(new MsgsAck({ msgIds: [state.msgId] })));
             state.reject(error);
             throw error;
@@ -664,7 +664,7 @@ class MTProtoSender {
         if ([16, 17].includes(badMsg.errorCode)) {
             // Sent msg_id too low or too high (respectively).
             // Use the current msg_id to determine the right time offset.
-            const to = this._state.updateTimeOffset(big_integer_1.default(message.msgId));
+            const to = this._state.updateTimeOffset((0, big_integer_1.default)(message.msgId));
             this._log.info(`System clock is wrong, set time offset to ${to}s`);
         }
         else if (badMsg.errorCode === 32) {
@@ -787,7 +787,7 @@ class MTProtoSender {
             }
             // we want to wait a second between each reconnect try to not flood the server with reconnects
             // in case of internal server issues.
-            Helpers_1.sleep(1000).then(() => {
+            (0, Helpers_1.sleep)(1000).then(() => {
                 this._log.info("Started reconnecting");
                 this._reconnect();
             });

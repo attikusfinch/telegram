@@ -62,7 +62,7 @@ class NewMessage extends common_1.EventBuilder {
     }
     async _resolve(client) {
         await super._resolve(client);
-        this.fromUsers = await common_1._intoIdSet(client, this.fromUsers);
+        this.fromUsers = await (0, common_1._intoIdSet)(client, this.fromUsers);
     }
     build(update, callback, selfId) {
         if (update instanceof tl_1.Api.UpdateNewMessage ||

@@ -30,7 +30,7 @@ class MTProxyIO {
         let random;
         // eslint-disable-next-line no-constant-condition
         while (true) {
-            random = Helpers_1.generateRandomBytes(64);
+            random = (0, Helpers_1.generateRandomBytes)(64);
             if (random[0] !== 0xef &&
                 !random.slice(4, 8).equals(Buffer.alloc(4))) {
                 let ok = true;
@@ -48,9 +48,9 @@ class MTProxyIO {
         random = random.toJSON().data;
         const randomReversed = Buffer.from(random.slice(8, 56)).reverse();
         // Encryption has "continuous buffer" enabled
-        const encryptKey = await Helpers_1.sha256(Buffer.concat([Buffer.from(random.slice(8, 40)), secret]));
+        const encryptKey = await (0, Helpers_1.sha256)(Buffer.concat([Buffer.from(random.slice(8, 40)), secret]));
         const encryptIv = Buffer.from(random.slice(40, 56));
-        const decryptKey = await Helpers_1.sha256(Buffer.concat([Buffer.from(randomReversed.slice(0, 32)), secret]));
+        const decryptKey = await (0, Helpers_1.sha256)(Buffer.concat([Buffer.from(randomReversed.slice(0, 32)), secret]));
         const decryptIv = Buffer.from(randomReversed.slice(32, 48));
         const encryptor = new CTR_1.CTR(encryptKey, encryptIv);
         const decryptor = new CTR_1.CTR(decryptKey, decryptIv);

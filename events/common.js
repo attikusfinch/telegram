@@ -3,7 +3,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.EventCommonSender = exports.EventCommon = exports.EventBuilder = exports._intoIdSet = void 0;
+exports.EventCommonSender = exports.EventCommon = exports.EventBuilder = void 0;
+exports._intoIdSet = _intoIdSet;
 const tl_1 = require("../tl");
 const custom_1 = require("../tl/custom");
 const Helpers_1 = require("../Helpers");
@@ -16,16 +17,16 @@ async function _intoIdSet(client, chats) {
     if (chats == undefined) {
         return undefined;
     }
-    if (!Helpers_1.isArrayLike(chats)) {
+    if (!(0, Helpers_1.isArrayLike)(chats)) {
         chats = [chats];
     }
     const result = new Set();
     for (let chat of chats) {
         if (typeof chat == "number" ||
             typeof chat == "bigint" ||
-            (typeof chat == "string" && Utils_1.parseID(chat)) ||
+            (typeof chat == "string" && (0, Utils_1.parseID)(chat)) ||
             big_integer_1.default.isInstance(chat)) {
-            chat = Helpers_1.returnBigInt(chat);
+            chat = (0, Helpers_1.returnBigInt)(chat);
             if (chat.lesser(0)) {
                 result.add(chat.toString());
             }
@@ -55,7 +56,6 @@ async function _intoIdSet(client, chats) {
     }
     return Array.from(result);
 }
-exports._intoIdSet = _intoIdSet;
 /**
  * The common event builder, with builtin support to filter per chat.<br/>
  * All events inherit this.

@@ -7,7 +7,7 @@ const chatGetter_1 = require("./chatGetter");
 const inspect_1 = require("../../inspect");
 class SenderGetter extends chatGetter_1.ChatGetter {
     [inspect_1.inspect.custom]() {
-        return Helpers_1.betterConsoleLog(this);
+        return (0, Helpers_1.betterConsoleLog)(this);
     }
     static initSenderClass(c, { senderId, sender, inputSender }) {
         c._senderId = senderId;

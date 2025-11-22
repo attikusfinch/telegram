@@ -22,7 +22,7 @@ class ObfuscatedIO {
         let random;
         // eslint-disable-next-line no-constant-condition
         while (true) {
-            random = Helpers_1.generateRandomBytes(64);
+            random = (0, Helpers_1.generateRandomBytes)(64);
             if (random[0] !== 0xef &&
                 !random.slice(4, 8).equals(Buffer.alloc(4))) {
                 let ok = true;
