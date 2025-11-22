@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateTwoFaSettings = void 0;
+exports.updateTwoFaSettings = updateTwoFaSettings;
 const Helpers_1 = require("../Helpers");
 const Password_1 = require("../Password");
 const tl_1 = require("../tl");
@@ -53,14 +53,14 @@ async function updateTwoFaSettings(client, { isCheckPassword, currentPassword, n
     if (!(pwd.newAlgo instanceof tl_1.Api.PasswordKdfAlgoUnknown)) {
         pwd.newAlgo.salt1 = Buffer.concat([
             pwd.newAlgo.salt1,
-            Helpers_1.generateRandomBytes(32),
+            (0, Helpers_1.generateRandomBytes)(32),
         ]);
     }
     if (!pwd.hasPassword && currentPassword) {
         currentPassword = undefined;
     }
     const password = currentPassword
-        ? await Password_1.computeCheck(pwd, currentPassword)
+        ? await (0, Password_1.computeCheck)(pwd, currentPassword)
         : new tl_1.Api.InputCheckPasswordEmpty();
     if (isCheckPassword) {
         await client.invoke(new tl_1.Api.auth.CheckPassword({ password }));
@@ -75,7 +75,7 @@ async function updateTwoFaSettings(client, { isCheckPassword, currentPassword, n
             newSettings: new tl_1.Api.account.PasswordInputSettings({
                 newAlgo: pwd.newAlgo,
                 newPasswordHash: newPassword
-                    ? await Password_1.computeDigest(pwd.newAlgo, newPassword)
+                    ? await (0, Password_1.computeDigest)(pwd.newAlgo, newPassword)
                     : Buffer.alloc(0),
                 hint,
                 email,
@@ -106,4 +106,3 @@ async function updateTwoFaSettings(client, { isCheckPassword, currentPassword, n
         }
     }
 }
-exports.updateTwoFaSettings = updateTwoFaSettings;

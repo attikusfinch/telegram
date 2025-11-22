@@ -29,7 +29,7 @@ class AuthKey {
             return;
         }
         this._key = value;
-        this._hash = await Helpers_1.sha1(this._key);
+        this._hash = await (0, Helpers_1.sha1)(this._key);
         const reader = new extensions_1.BinaryReader(this._hash);
         this.auxHash = reader.readLong(false);
         reader.read(4);
@@ -37,7 +37,7 @@ class AuthKey {
     }
     async waitForKey() {
         while (!this.keyId) {
-            await Helpers_2.sleep(20);
+            await (0, Helpers_2.sleep)(20);
         }
     }
     getKey() {
@@ -52,16 +52,16 @@ class AuthKey {
      */
     async calcNewNonceHash(newNonce, number) {
         if (this.auxHash) {
-            const nonce = Helpers_1.toSignedLittleBuffer(newNonce, 32);
+            const nonce = (0, Helpers_1.toSignedLittleBuffer)(newNonce, 32);
             const n = Buffer.alloc(1);
             n.writeUInt8(number, 0);
             const data = Buffer.concat([
                 nonce,
-                Buffer.concat([n, Helpers_1.readBufferFromBigInt(this.auxHash, 8, true)]),
+                Buffer.concat([n, (0, Helpers_1.readBufferFromBigInt)(this.auxHash, 8, true)]),
             ]);
             // Calculates the message key from the given data
-            const shaData = (await Helpers_1.sha1(data)).slice(4, 20);
-            return Helpers_1.readBigIntFromBuffer(shaData, true, true);
+            const shaData = (await (0, Helpers_1.sha1)(data)).slice(4, 20);
+            return (0, Helpers_1.readBigIntFromBuffer)(shaData, true, true);
         }
         throw new Error("Auth key not set");
     }

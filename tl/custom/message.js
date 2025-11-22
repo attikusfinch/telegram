@@ -1,7 +1,11 @@
 "use strict";
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
 }) : (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     o[k2] = m[k];
@@ -11,13 +15,23 @@ var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (
 }) : function(o, v) {
     o["default"] = v;
 });
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CustomMessage = void 0;
 const senderGetter_1 = require("./senderGetter");
@@ -38,12 +52,8 @@ const inspect_1 = require("../../inspect");
  * which means you have access to all their sender and chat properties and methods.
  */
 class CustomMessage extends senderGetter_1.SenderGetter {
-    constructor(args) {
-        super();
-        this.init(args);
-    }
     [inspect_1.inspect.custom]() {
-        return Helpers_1.betterConsoleLog(this);
+        return (0, Helpers_1.betterConsoleLog)(this);
     }
     init({ id, peerId = undefined, date = undefined, out = undefined, mentioned = undefined, mediaUnread = undefined, silent = undefined, post = undefined, fromId = undefined, replyTo = undefined, message = undefined, fwdFrom = undefined, viaBotId = undefined, media = undefined, replyMarkup = undefined, entities = undefined, views = undefined, editDate = undefined, postAuthor = undefined, groupedId = undefined, fromScheduled = undefined, legacy = undefined, editHide = undefined, pinned = undefined, restrictionReason = undefined, forwards = undefined, replies = undefined, action = undefined, reactions = undefined, noforwards = undefined, ttlPeriod = undefined, _entities = new Map(), }) {
         if (!id)
@@ -104,9 +114,13 @@ class CustomMessage extends senderGetter_1.SenderGetter {
         // Note: these calls would reset the client
         chatGetter_1.ChatGetter.initChatClass(this, { chatPeer: peerId, broadcast: post });
         senderGetter_1.SenderGetter.initSenderClass(this, {
-            senderId: senderId ? Helpers_1.returnBigInt(senderId) : undefined,
+            senderId: senderId ? (0, Helpers_1.returnBigInt)(senderId) : undefined,
         });
         this._forward = undefined;
+    }
+    constructor(args) {
+        super();
+        this.init(args);
     }
     _finishInit(client, entities, inputChat) {
         this._client = client;
@@ -401,7 +415,7 @@ class CustomMessage extends senderGetter_1.SenderGetter {
     get toId() {
         if (this._client && !this.out && this.isPrivate) {
             return new api_1.Api.PeerUser({
-                userId: users_1._selfId(this._client),
+                userId: (0, users_1._selfId)(this._client),
             });
         }
         return this.peerId;

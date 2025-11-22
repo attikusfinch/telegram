@@ -24,7 +24,7 @@ class AbridgedPacketCodec extends Connection_1.PacketCodec {
         else {
             temp = Buffer.concat([
                 Buffer.from("7f", "hex"),
-                Helpers_1.readBufferFromBigInt(big_integer_1.default(length), 3),
+                (0, Helpers_1.readBufferFromBigInt)((0, big_integer_1.default)(length), 3),
             ]);
         }
         return Buffer.concat([temp, data]);

@@ -37,12 +37,12 @@ class CallbackQuery extends common_1.EventBuilder {
             return new CallbackQueryEvent(update, update.peer, update.msgId);
         }
         else if (update instanceof tl_1.Api.UpdateInlineBotCallbackQuery) {
-            const b = Helpers_1.toSignedLittleBuffer(update.msgId.id, 8);
+            const b = (0, Helpers_1.toSignedLittleBuffer)(update.msgId.id, 8);
             const msgId = b.readInt32LE(0);
             const peerId = b.readInt32LE(4);
             const peer = peerId < 0
-                ? new tl_1.Api.PeerChannel({ channelId: Helpers_1.returnBigInt(-peerId) })
-                : new tl_1.Api.PeerUser({ userId: Helpers_1.returnBigInt(peerId) });
+                ? new tl_1.Api.PeerChannel({ channelId: (0, Helpers_1.returnBigInt)(-peerId) })
+                : new tl_1.Api.PeerUser({ userId: (0, Helpers_1.returnBigInt)(peerId) });
             return new CallbackQueryEvent(update, peer, msgId);
         }
     }
@@ -85,13 +85,13 @@ class CallbackQueryEvent extends common_1.EventCommonSender {
         });
         this.query = query;
         this.patternMatch = undefined;
-        this._senderId = Helpers_1.returnBigInt(query.userId);
+        this._senderId = (0, Helpers_1.returnBigInt)(query.userId);
         this._message = undefined;
         this._answered = false;
     }
     _setClient(client) {
         super._setClient(client);
-        const [sender, inputSender] = Utils_1._getEntityPair(this._senderId.toString(), this._entities, client._entityCache);
+        const [sender, inputSender] = (0, Utils_1._getEntityPair)(this._senderId.toString(), this._entities, client._entityCache);
         this._sender = sender;
         this._inputSender = inputSender;
     }
@@ -124,7 +124,7 @@ class CallbackQueryEvent extends common_1.EventCommonSender {
         }
         if (!this._sender)
             return;
-        this._inputSender = Utils_1.getInputPeer(this._chat);
+        this._inputSender = (0, Utils_1.getInputPeer)(this._chat);
         if (!this._inputSender.hasOwnProperty("accessHash")) {
             try {
                 this._inputSender = this._client._entityCache.get(this._senderId);
